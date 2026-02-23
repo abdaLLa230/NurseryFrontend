@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    
+    <!-- Primary Meta Tags -->
+    <title>نظام إدارة الحضانة - إدارة شاملة للحضانات والدورات التعليمية</title>
+    <meta name="title" content="نظام إدارة الحضانة - إدارة شاملة للحضانات والدورات التعليمية" />
+    <meta name="description" content="نظام متكامل لإدارة الحضانات والدورات التعليمية. إدارة الطلاب، الموظفين، الرسوم، المرتبات، والتقارير المالية بسهولة وكفاءة." />
+    <meta name="keywords" content="نظام حضانة, إدارة حضانة, nursery management, إدارة طلاب, إدارة رسوم, نظام تعليمي, إدارة مدرسية" />
+    <meta name="author" content="Nursery Management System" />
+    <meta name="robots" content="index, follow" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://nursery-system.com/" />
+    <meta property="og:title" content="نظام إدارة الحضانة" />
+    <meta property="og:description" content="نظام متكامل لإدارة الحضانات والدورات التعليمية" />
+    <meta property="og:locale" content="ar_EG" />
+    <meta property="og:site_name" content="Nursery Management System" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="نظام إدارة الحضانة" />
+    <meta name="twitter:description" content="نظام متكامل لإدارة الحضانات والدورات التعليمية" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="apple-touch-icon" href="/logo.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#4f46e5" />
+    <meta name="msapplication-TileColor" content="#4f46e5" />
+    
+    <!-- Performance: Critical CSS will be inlined by Vite -->
+    
+    <!-- Performance: Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Performance: DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    
+    <!-- Google Fonts - Optimized with display=swap -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" />
+    </noscript>
+    
+    <!-- Security Headers (Note: X-Frame-Options should be set via HTTP headers, not meta tags) -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://localhost:7001 http://localhost:5000;" />
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "نظام إدارة الحضانة",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "description": "نظام متكامل لإدارة الحضانات والدورات التعليمية",
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      }
+    }
+    </script>
+    
+    <!-- Accessibility: Skip to main content -->
+    <style>
+      /* Critical CSS - Inline for performance */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Cairo', 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 0;
+        background: #4f46e5;
+        color: white;
+        padding: 8px 16px;
+        text-decoration: none;
+        z-index: 100;
+        border-radius: 0 0 4px 0;
+        font-weight: 600;
+      }
+      
+      .skip-link:focus {
+        top: 0;
+      }
+      
+      /* Loading spinner */
+      #loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f9fafb;
+        z-index: 9999;
+      }
+      
+      #loading .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e5e7eb;
+        border-top-color: #4f46e5;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      /* Hide loading when app loads */
+      #root:not(:empty) ~ #loading {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Accessibility: Skip to main content link -->
+    <a href="#main-content" class="skip-link" aria-label="تخطي إلى المحتوى الرئيسي">
+      تخطي إلى المحتوى الرئيسي
+    </a>
+    
+    <!-- Main App Container -->
+    <div id="root" role="application" aria-label="نظام إدارة الحضانة"></div>
+    
+    <!-- Loading Indicator -->
+    <div id="loading" aria-label="جاري التحميل" role="status">
+      <div class="spinner"></div>
+    </div>
+    
+    <!-- Noscript fallback -->
+    <noscript>
+      <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif; background: #fef2f2; border: 2px solid #ef4444; margin: 20px; border-radius: 8px;">
+        <h1 style="color: #dc2626; margin-bottom: 16px;">⚠️ يرجى تفعيل JavaScript</h1>
+        <p style="color: #991b1b; margin-bottom: 8px;">هذا التطبيق يتطلب تفعيل JavaScript للعمل بشكل صحيح.</p>
+        <p style="color: #991b1b;">Please enable JavaScript to use this application.</p>
+      </div>
+    </noscript>
+    
+    <!-- Main Script - Module type for modern browsers -->
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

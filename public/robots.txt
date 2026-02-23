@@ -1,0 +1,10 @@
+# Robots.txt for Nursery Management System
+# This is a private management system - Allow indexing for production
+User-agent: *
+Allow: /
+
+# Disallow sensitive API endpoints
+Disallow: /api/
+
+# Sitemap location (update with your production domain)
+Sitemap: https://nursery-system.com/sitemap.xml
