@@ -183,9 +183,9 @@ const Students = () => {
           <div key={i} className="card-stat">
             <div className="flex items-center gap-2.5 mb-2">
               <div className={`w-8 h-8 rounded-lg ${s.color} flex items-center justify-center`}><s.icon className="w-4 h-4 text-white" /></div>
-              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">{s.label}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">{s.label}</span>
             </div>
-            <p className="text-xl font-bold text-gray-900 dark:text-white">{s.val}</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">{s.val}</p>
           </div>
         ))}
       </div>
@@ -310,7 +310,7 @@ const Students = () => {
       {/* Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={() => { setShowModal(false); resetForm(); }}>
-          <div className="modal-content max-w-md" onClick={e => e.stopPropagation()}>
+          <div className="modal-content max-w-md md:max-w-lg lg:max-w-lg" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800">
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">{editingStudent ? t('students.edit') : t('students.addNew')}</h2>
               <button onClick={() => { setShowModal(false); resetForm(); }} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"><X className="w-5 h-5 text-gray-500" /></button>
@@ -356,8 +356,10 @@ const Students = () => {
                   </select>
                 </div>
               </div>
-              <div><label className="label">{t('students.parentPhone')}</label><input type="text" className="input" value={formData.parentPhone} onChange={e => setFormData({ ...formData, parentPhone: e.target.value })} /></div>
-              <div><label className="label">{t('students.registrationDate')}</label><input type="date" className="input" value={formData.registrationDate} onChange={e => setFormData({ ...formData, registrationDate: e.target.value })} /></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="label">{t('students.parentPhone')}</label><input type="text" className="input" value={formData.parentPhone} onChange={e => setFormData({ ...formData, parentPhone: e.target.value })} /></div>
+                <div><label className="label">{t('students.registrationDate')}</label><input type="date" className="input" value={formData.registrationDate} onChange={e => setFormData({ ...formData, registrationDate: e.target.value })} /></div>
+              </div>
               {editingStudent && (
                 <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                   <input type="checkbox" checked={formData.isActive} onChange={e => setFormData({ ...formData, isActive: e.target.checked })} className="w-4 h-4 rounded border-gray-300" />

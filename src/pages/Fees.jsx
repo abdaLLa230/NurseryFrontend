@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { feesAPI, childrenAPI } from '../services/api';
 import { showSuccessAlert, showErrorAlert, handleApiError, showConfirmDialog } from '../utils/helpers';
-import { Search, DollarSign, CheckCircle, AlertCircle, RefreshCw, Edit, X, Trash2 } from 'lucide-react';
+import { Search, DollarSign, CheckCircle, AlertCircle, RefreshCw, Edit, X, Trash2, Printer } from 'lucide-react';
 
 const Fees = () => {
     const { t } = useTranslation();
@@ -12,6 +12,8 @@ const Fees = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
+    const [filterType, setFilterType] = useState('all');
+    const [filterLevel, setFilterLevel] = useState('all');
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
     const [showPayModal, setShowPayModal] = useState(false);
@@ -40,6 +42,7 @@ const Fees = () => {
     const feeMatrix = useMemo(() => {
         const byKey = new Map(); // key -> array of records
 
+        // بناء خريطة من جميع السجلات
         for (const f of fees) {
             const key = `${String(f.childID)}-${Number(f.feeMonth)}-${Number(f.feeYear)}`;
             const arr = byKey.get(key) || [];
@@ -47,19 +50,20 @@ const Fees = () => {
             byKey.set(key, arr);
         }
 
+        // إنشاء صف لكل طالب مع بيانات الشهر والسنة المختارة
         return students.map(student => {
             const key = `${String(student.childID)}-${Number(selectedMonth)}-${Number(selectedYear)}`;
             const records = byKey.get(key) || [];
             const hasDuplicates = records.length > 1;
 
-            // pick a deterministic "primary" record:
-            // prefer Paid, else newest feeID (or paymentDate if you have it)
+            // اختيار السجل الأساسي: نفضل المدفوع، وإلا الأحدث
             const primary =
                 records.find(r => r.paymentStatus === 'Paid') ||
                 records.slice().sort((a, b) => (b.feeID ?? 0) - (a.feeID ?? 0))[0] ||
                 null;
 
-            const isPaid = primary?.paymentStatus === 'Paid';
+            // تحديد حالة الدفع بناءً على السجل الأساسي
+            const isPaid = primary !== null && primary.paymentStatus === 'Paid';
 
             return {
                 student,
@@ -75,7 +79,9 @@ const Fees = () => {
     const filtered = feeMatrix.filter(row => {
         const matchSearch = row.student.childName.toLowerCase().includes(searchTerm.toLowerCase());
         const matchStatus = filterStatus === 'all' || (filterStatus === 'paid' && row.isPaid) || (filterStatus === 'unpaid' && !row.isPaid);
-        return matchSearch && matchStatus;
+        const matchType = filterType === 'all' || row.student.studentType === filterType;
+        const matchLevel = filterLevel === 'all' || row.student.studentLevel === filterLevel;
+        return matchSearch && matchStatus && matchType && matchLevel;
     });
 
     const stats = {
@@ -100,6 +106,69 @@ const Fees = () => {
             paymentStatus: row.fee?.paymentStatus || 'NotPaid'
         });
         setShowEditModal(true);
+    };
+
+    const printMonthlyFee = (row) => {
+        const months = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+        
+        // استخدم الشهر والسنة من الفلتر المختار
+        const displayMonth = selectedMonth;
+        const displayYear = selectedYear;
+        
+        const w = window.open('', '_blank');
+        w.document.body.innerHTML = `
+          <div style="font-family:Arial;max-width:800px;margin:40px auto;padding:0;border:3px solid #667eea;border-radius:15px;overflow:hidden;direction:rtl">
+            <div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);color:white;padding:30px;text-align:center">
+              <img src="/NurseryLogo.png" alt="حضانة الأمل" style="width:80px;height:80px;object-fit:cover;border-radius:50%;margin:0 auto 15px;background:white;padding:5px;box-shadow:0 4px 6px rgba(0,0,0,0.1)" />
+              <h1 style="margin:0 0 5px;font-size:28px">حضانة الأمل</h1>
+              <p style="margin:0;font-size:16px;opacity:0.9">فاتورة الرسوم الشهرية</p>
+            </div>
+            
+            <div style="padding:40px">
+              <div style="background:#f8f9ff;border-radius:12px;padding:25px;margin-bottom:25px;border-right:4px solid #667eea">
+                <h2 style="margin:0 0 15px;color:#667eea;font-size:22px">معلومات الطالب</h2>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+                  <div>
+                    <p style="margin:0;color:#666;font-size:13px;margin-bottom:5px">اسم الطالب</p>
+                    <p style="margin:0;font-size:18px;font-weight:bold;color:#333">${row.student.childName}</p>
+                  </div>
+                  <div>
+                    <p style="margin:0;color:#666;font-size:13px;margin-bottom:5px">النوع</p>
+                    <p style="margin:0;font-size:18px;font-weight:bold;color:#333">${row.student.studentType === 'Nursery' ? 'حضانة' : 'كورس'}</p>
+                  </div>
+                  <div>
+                    <p style="margin:0;color:#666;font-size:13px;margin-bottom:5px">الشهر</p>
+                    <p style="margin:0;font-size:18px;font-weight:bold;color:#333">${months[displayMonth - 1]} ${displayYear}</p>
+                  </div>
+                  <div>
+                    <p style="margin:0;color:#666;font-size:13px;margin-bottom:5px">حالة الدفع</p>
+                    <span style="display:inline-block;padding:8px 20px;border-radius:20px;font-weight:bold;font-size:14px;${row.fee?.paymentStatus === 'Paid' ? 'background:#10b981;color:white' : 'background:#ef4444;color:white'}">
+                      ${row.fee?.paymentStatus === 'Paid' ? '✓ مدفوع' : '✗ غير مدفوع'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div style="background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);border-radius:12px;padding:35px;text-align:center;color:white;margin-bottom:25px;box-shadow:0 4px 15px rgba(102,126,234,0.3)">
+                <p style="margin:0 0 10px;font-size:16px;opacity:0.9">المبلغ المستحق</p>
+                <p style="margin:0;font-size:56px;font-weight:bold;line-height:1">${row.amount > 0 ? row.amount.toLocaleString() : '—'}</p>
+                <p style="margin:10px 0 0;font-size:20px;opacity:0.9">جنيه مصري</p>
+              </div>
+              
+              ${row.fee?.notes ? `
+              <div style="background:#fff3cd;border-right:4px solid #ffc107;border-radius:8px;padding:15px;margin-bottom:25px">
+                <p style="margin:0;color:#856404"><strong>ملاحظات:</strong> ${row.fee.notes}</p>
+              </div>
+              ` : ''}
+              
+              <div style="text-align:center;padding-top:25px;border-top:2px dashed #ddd">
+                <p style="margin:0;color:#999;font-size:13px">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')}</p>
+                <p style="margin:5px 0 0;color:#667eea;font-size:14px;font-weight:bold">شكراً لثقتكم بنا ❤️</p>
+              </div>
+            </div>
+          </div>
+        `;
+        setTimeout(() => w.print(), 300);
     };
 
     const handlePay = async (e) => {
@@ -154,7 +223,7 @@ const Fees = () => {
             fetchAll();
         } catch (err) {
             if (err.response?.status === 400 || err.response?.status === 409) {
-                showErrorAlert('البيانات تغيرت. جاري إعادة التحميل...');
+                showErrorAlert(t('status.dataChanged'));
                 fetchAll();
                 setShowEditModal(false);
             } else {
@@ -190,6 +259,83 @@ const Fees = () => {
         finally { setSaving(false); }
     };
 
+    const printFeeReport = () => {
+        if (filtered.length === 0) {
+            showErrorAlert(t('status.noPrintData'));
+            return;
+        }
+        
+        const months = ['يناير', 'فبراير', 'مارس', 'إبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+        const total = filtered.filter(r => r.isPaid).reduce((sum, r) => sum + r.amount, 0);
+        
+        // تحديد نص الفلتر
+        let filterText = '';
+        if (filterType !== 'all') filterText += ` - ${filterType === 'Nursery' ? 'حضانة' : 'كورس'}`;
+        if (filterLevel !== 'all') filterText += ` - ${filterLevel}`;
+        if (filterStatus !== 'all') filterText += ` - ${filterStatus === 'paid' ? 'مدفوع' : 'غير مدفوع'}`;
+        
+        const w = window.open('', '_blank');
+        w.document.body.innerHTML = `
+          <div style="font-family:Arial;max-width:1000px;margin:40px auto;padding:30px;border:2px solid #333;direction:rtl">
+            <div style="text-align:center;border-bottom:2px solid #333;padding-bottom:20px;margin-bottom:30px">
+              <img src="/NurseryLogo.png" alt="حضانة الأمل" style="width:80px;height:80px;object-fit:cover;border-radius:50%;margin:0 auto 15px" />
+              <h1 style="margin:0 0 10px">حضانة الأمل</h1>
+              <p style="margin:0;color:#666">تقرير الرسوم الشهرية - ${months[selectedMonth - 1]} ${selectedYear}${filterText}</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:30px">
+              <div style="background:#667eea;color:white;padding:20px;text-align:center;border-radius:12px">
+                <div style="font-size:13px;margin-bottom:8px">إجمالي الطلاب</div>
+                <div style="font-size:36px;font-weight:bold">${filtered.length}</div>
+              </div>
+              <div style="background:#10b981;color:white;padding:20px;text-align:center;border-radius:12px">
+                <div style="font-size:13px;margin-bottom:8px">الطلاب المدفوعين</div>
+                <div style="font-size:36px;font-weight:bold">${stats.paid}</div>
+              </div>
+              <div style="background:#ef4444;color:white;padding:20px;text-align:center;border-radius:12px">
+                <div style="font-size:13px;margin-bottom:8px">الطلاب غير المدفوعين</div>
+                <div style="font-size:36px;font-weight:bold">${stats.unpaid}</div>
+              </div>
+            </div>
+            <div style="background:#f8f9ff;padding:20px;border-radius:12px;margin-bottom:30px;text-align:center">
+              <div style="font-size:14px;color:#666;margin-bottom:8px">إجمالي المبالغ المحصلة</div>
+              <div style="font-size:48px;font-weight:bold;color:#667eea">${total.toLocaleString()}</div>
+              <div style="font-size:18px;color:#666">جنيه مصري</div>
+            </div>
+            <table style="width:100%;border-collapse:collapse;border:2px solid #ddd">
+              <thead style="background:#333;color:white">
+                <tr>
+                  <th style="padding:12px;text-align:right;border:1px solid #333">#</th>
+                  <th style="padding:12px;text-align:right;border:1px solid #333">اسم الطالب</th>
+                  <th style="padding:12px;text-align:right;border:1px solid #333">النوع</th>
+                  <th style="padding:12px;text-align:right;border:1px solid #333">المستوى</th>
+                  <th style="padding:12px;text-align:right;border:1px solid #333">المبلغ</th>
+                  <th style="padding:12px;text-align:right;border:1px solid #333">الحالة</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${filtered.map((row, i) => `
+                  <tr style="border-bottom:1px solid #ddd;${i % 2 === 0 ? 'background:#f9f9f9' : ''}">
+                    <td style="padding:10px;border:1px solid #ddd">${i + 1}</td>
+                    <td style="padding:10px;border:1px solid #ddd;font-weight:bold">${row.student.childName}</td>
+                    <td style="padding:10px;border:1px solid #ddd">${row.student.studentType === 'Nursery' ? 'حضانة' : 'كورس'}</td>
+                    <td style="padding:10px;border:1px solid #ddd">${row.student.studentLevel || '—'}</td>
+                    <td style="padding:10px;border:1px solid #ddd;color:#667eea;font-weight:bold">${row.amount > 0 ? row.amount.toLocaleString() + ' جنيه' : '—'}</td>
+                    <td style="padding:10px;border:1px solid #ddd;font-weight:bold;color:${row.isPaid ? '#10b981' : '#ef4444'}">
+                      ${row.isPaid ? '✓ مدفوع' : '✗ غير مدفوع'}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+            <div style="text-align:center;margin-top:30px;padding-top:20px;border-top:2px solid #333;color:#666;font-size:13px">
+              <p>تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG')} - ${new Date().toLocaleTimeString('ar-EG')}</p>
+              <p>حضانة الأمل - نظام إدارة الحضانة ❤️</p>
+            </div>
+          </div>
+        `;
+        setTimeout(() => w.print(), 300);
+    };
+
     if (error) {
         return (<div className="card text-center py-12"><AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-3" /><p className="text-gray-700 dark:text-gray-300 mb-3">{error}</p><button onClick={fetchAll} className="btn btn-primary"><RefreshCw className="w-4 h-4" /> {t('dashboard.retry')}</button></div>);
     }
@@ -197,27 +343,64 @@ const Fees = () => {
     return (
         <div>
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3">
-                <div><h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('fees.title')}</h1><p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('fees.subtitle')}</p></div>
+            <div className="flex items-center justify-between mb-6 gap-3">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('fees.title')}</h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t('fees.subtitle')}</p>
+                </div>
+                <button
+                    onClick={printFeeReport}
+                    className="btn btn-primary flex items-center gap-2 whitespace-nowrap"
+                >
+                    <Printer className="w-4 h-4" />
+                    <span className="inline">طباعة التقرير الشهري</span>
+                </button>
             </div>
 
             {/* Month/Year Selector */}
             <div className="card mb-4 !p-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                    <div className="relative">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
+                    <div className="relative col-span-2 sm:col-span-3 md:col-span-2 lg:col-span-2">
                         <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input type="text" placeholder={t('common.search') + '...'} className="input !pr-10 !py-3 text-sm" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                        <input type="text" placeholder={t('filters.searchByName')} className="input !pr-10 text-sm" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                     </div>
-                    <select className="input !py-2 text-sm" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-                        <option value="all">{t('common.all')}</option>
-                        <option value="paid">{t('fees.paid')}</option>
-                        <option value="unpaid">{t('fees.unpaid')}</option>
-                    </select>
-                    <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))} className="input !py-2 text-sm">
+                    <select value={selectedMonth} onChange={(e) => setSelectedMonth(Number(e.target.value))} className="input !py-2 text-xs">
                         {Array.from({ length: 12 }, (_, i) => (<option key={i} value={i + 1}>{t(`months.${i + 1}`)}</option>))}
                     </select>
-                    <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className="input !py-2 text-sm">
+                    <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))} className="input !py-2 text-xs">
                         {[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}
+                    </select>
+                    <select className="input !py-2 text-xs" value={filterType} onChange={(e) => { setFilterType(e.target.value); setFilterLevel('all'); }}>
+                        <option value="all">{t('filters.allTypes')}</option>
+                        <option value="Nursery">{t('filters.nursery')}</option>
+                        <option value="Course">{t('filters.course')}</option>
+                    </select>
+                    <select className="input !py-2 text-xs" value={filterLevel} onChange={(e) => setFilterLevel(e.target.value)} disabled={filterType === 'all'}>
+                        {filterType === 'all' && <option value="all">{t('filters.selectType')}</option>}
+                        {filterType === 'Nursery' && (
+                            <>
+                                <option value="all">{t('filters.allClasses')}</option>
+                                <option value="KG1">KG1</option>
+                                <option value="KG2">KG2</option>
+                                <option value="KG3">KG3</option>
+                            </>
+                        )}
+                        {filterType === 'Course' && (
+                            <>
+                                <option value="all">{t('filters.allGrades')}</option>
+                                <option value="1">{t('filters.gradeFirst')}</option>
+                                <option value="2">{t('filters.gradeSecond')}</option>
+                                <option value="3">{t('filters.gradeThird')}</option>
+                                <option value="4">{t('filters.gradeFourth')}</option>
+                                <option value="5">{t('filters.gradeFifth')}</option>
+                                <option value="6">{t('filters.gradeSixth')}</option>
+                            </>
+                        )}
+                    </select>
+                    <select className="input !py-2 text-xs" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                        <option value="all">{t('filters.selectPaymentStatus')}</option>
+                        <option value="paid">{t('filters.payer')}</option>
+                        <option value="unpaid">{t('filters.nonPayer')}</option>
                     </select>
                 </div>
             </div>
@@ -231,8 +414,8 @@ const Fees = () => {
                     { label: t('dashboard.totalRevenue'), val: stats.totalAmount.toLocaleString() + ' ' + t('common.egp'), color: 'bg-amber-600' },
                 ].map((s, i) => (
                     <div key={i} className="card-stat">
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{s.label}</p>
-                        <p className="text-xl font-bold text-gray-900 dark:text-white">{s.val}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{s.label}</p>
+                        <p className="text-2xl font-bold text-gray-900 dark:text-white">{s.val}</p>
                     </div>
                 ))}
             </div>
@@ -279,6 +462,9 @@ const Fees = () => {
                                         </td>
                                         <td className="px-4 py-3 text-center">
                                             <div className="flex items-center justify-center gap-1">
+                                                <button onClick={() => printMonthlyFee(row)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 text-indigo-600 rounded-lg" title="طباعة الفاتورة">
+                                                    <Printer className="w-4 h-4" />
+                                                </button>
                                                 {!row.isPaid ? (
                                                     <button onClick={() => openPayModal(row)} className="btn btn-success !py-1 !px-3 !text-xs">
                                                         <DollarSign className="w-3.5 h-3.5" /> {t('fees.pay')}
@@ -316,15 +502,20 @@ const Fees = () => {
                                                 </span>
                                             </div>
                                         </div>
-                                        {!row.isPaid ? (
-                                            <button onClick={() => openPayModal(row)} className="btn btn-success !py-2 !px-3 !text-sm whitespace-nowrap">
-                                                <DollarSign className="w-4 h-4" /> {t('fees.pay')}
+                                        <div className="flex items-center gap-2">
+                                            <button onClick={() => printMonthlyFee(row)} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 text-indigo-600 dark:text-indigo-400 rounded-lg transition-colors" title="طباعة الفاتورة">
+                                                <Printer className="w-5 h-5" />
                                             </button>
-                                        ) : (
-                                            <button onClick={() => openEditModal(row)} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 rounded-lg transition-colors">
-                                                <Edit className="w-5 h-5" />
-                                            </button>
-                                        )}
+                                            {!row.isPaid ? (
+                                                <button onClick={() => openPayModal(row)} className="btn btn-success !py-2 !px-3 !text-sm whitespace-nowrap">
+                                                    <DollarSign className="w-4 h-4" /> {t('fees.pay')}
+                                                </button>
+                                            ) : (
+                                                <button onClick={() => openEditModal(row)} className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 rounded-lg transition-colors">
+                                                    <Edit className="w-5 h-5" />
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="p-4 space-y-3">

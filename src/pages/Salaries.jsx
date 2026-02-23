@@ -87,7 +87,7 @@ const Salaries = () => {
         // Safety check
         const alreadyPaid = salaryMatrix.find(r => r.employee.employeeID === selectedEmployee.employeeID && r.isPaid);
         if (alreadyPaid) {
-            handleApiError({ response: { data: { message: t('messages.alreadyPaid') || 'Already paid for this month.' } } }, t);
+            handleApiError({ response: { data: { message: t('messages.alreadyPaid') } } }, t);
             setShowPayModal(false);
             return;
         }
@@ -105,7 +105,7 @@ const Salaries = () => {
         // Final guard: check for duplicates again before submitting
         const currentRow = salaryMatrix.find(r => r.employee.employeeID === selectedEmployee?.employeeID);
         if (currentRow?.allRecords.length > 1) {
-            showErrorAlert(t('messages.duplicateError') || 'Multiple records detected. Please delete duplicates first.');
+            showErrorAlert(t('messages.duplicateError'));
             return;
         }
 
@@ -127,7 +127,7 @@ const Salaries = () => {
             fetchAll();
         } catch (err) {
             if (err.response?.status === 400 || err.response?.status === 409) {
-                showErrorAlert('البيانات تغيرت. جاري إعادة التحميل...');
+                showErrorAlert(t('status.dataChanged'));
                 fetchAll();
                 setShowEditModal(false);
             } else {
@@ -182,7 +182,7 @@ const Salaries = () => {
                     { label: t('fees.paid'), val: stats.paid },
                     { label: t('fees.unpaid'), val: stats.unpaid },
                     { label: t('dashboard.monthlySalaries'), val: stats.totalAmount.toLocaleString() + ' ' + t('common.egp') },
-                ].map((s, i) => (<div key={i} className="card-stat"><p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{s.label}</p><p className="text-xl font-bold text-gray-900 dark:text-white">{s.val}</p></div>))}
+                ].map((s, i) => (<div key={i} className="card-stat"><p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{s.label}</p><p className="text-2xl font-bold text-gray-900 dark:text-white">{s.val}</p></div>))}
             </div>
 
             {loading ? (
@@ -214,7 +214,7 @@ const Salaries = () => {
                                         <td className="px-4 py-3 text-right font-medium text-gray-900 dark:text-white whitespace-nowrap">
                                             {row.isPaid ? `${row.amount.toLocaleString()} ${t('common.egp')}` : `${row.employee.monthlySalary?.toLocaleString()} ${t('common.egp')}`}
                                             {row.hasDuplicates && (
-                                                <span className="ml-2 text-red-500" title="Duplicate records detected in database">
+                                                <span className="ml-2 text-red-500" title={t('messages.duplicateError')}>
                                                     <AlertCircle className="w-3.5 h-3.5 inline" />
                                                 </span>
                                             )}
@@ -222,7 +222,7 @@ const Salaries = () => {
                                         <td className="px-4 py-3 text-right"><span className={row.isPaid ? 'pill-paid' : 'pill-unpaid'}>{row.isPaid ? t('fees.paid') : t('fees.unpaid')}</span></td>
                                         <td className="px-4 py-3 hidden lg:table-cell text-right text-gray-500 dark:text-gray-400 text-xs">
                                             {row.salary?.notes || '—'}
-                                            {row.hasDuplicates && <div className="text-[10px] text-red-500 font-bold mt-1">DATA ERROR: Multiple records</div>}
+                                            {row.hasDuplicates && <div className="text-[10px] text-red-500 font-bold mt-1">{t('messages.duplicateError')}</div>}
                                         </td>
                                         <td className="px-4 py-3 text-center">
                                             <div className="flex items-center justify-center gap-1">
@@ -329,8 +329,8 @@ const Salaries = () => {
                                         <div className="flex gap-2 mb-3">
                                             <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
                                             <div>
-                                                <p className="text-sm font-bold text-red-700 dark:text-red-400">Database Conflict Detected</p>
-                                                <p className="text-xs text-red-600 dark:text-red-500 mt-1">This employee has multiple payout records for {t(`months.${selectedMonth}`)} {selectedYear}. You must delete the duplicates before you can edit.</p>
+                                                <p className="text-sm font-bold text-red-700 dark:text-red-400">{t('messages.databaseConflict')}</p>
+                                                <p className="text-xs text-red-600 dark:text-red-500 mt-1">{t('messages.multipleRecords')} {t(`months.${selectedMonth}`)} {selectedYear}. {t('messages.deleteBeforeEdit')}.</p>
                                             </div>
                                         </div>
                                         <div className="space-y-2">
@@ -338,13 +338,13 @@ const Salaries = () => {
                                                 <div key={s.paymentID} className="flex items-center justify-between bg-white dark:bg-gray-800 p-2.5 rounded-lg border border-red-100 dark:border-red-900/40 shadow-sm transition-all hover:border-red-300">
                                                     <div className="flex flex-col">
                                                         <span className="text-xs font-bold text-gray-900 dark:text-white">{s.amount} {t('common.egp')}</span>
-                                                        <span className="text-[10px] text-gray-500">{s.notes || 'No notes'}</span>
+                                                        <span className="text-[10px] text-gray-500">{s.notes || t('messages.noNotes')}</span>
                                                     </div>
                                                     <button
                                                         type="button"
                                                         onClick={() => handleDeleteSalary(s.paymentID)}
                                                         className="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-md transition-colors"
-                                                        title="Delete this record"
+                                                        title={t('common.delete')}
                                                     >
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>

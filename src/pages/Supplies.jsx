@@ -118,8 +118,8 @@ const Supplies = () => {
                     </div>
 
                     <div className="card-stat !p-3 flex items-center gap-2">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{t('supplies.price')}</p>
-                        <p className="font-bold text-gray-900 dark:text-white">{totalCost.toLocaleString()} {t('common.egp')}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{t('supplies.price')}</p>
+                        <p className="text-lg font-bold text-gray-900 dark:text-white">{totalCost.toLocaleString()} {t('common.egp')}</p>
                     </div>
                 </div>
             </div>

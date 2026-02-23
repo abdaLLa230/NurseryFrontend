@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "نظام إدارة الحضانة",
-    "subtitle": "نظام متكامل لإدارة الحضانات والدورات التعليمية"
+    "subtitle": "نظام متكامل لإدارة الحضانات و الدورات التعليمية"
   },
   "auth": {
     "login": "تسجيل الدخول",
@@ -38,7 +38,7 @@
     "subtitle": "نظرة شاملة على أداء الحضانة",
     "totalStudents": "إجمالي الطلاب",
     "nurseryStudents": "طلاب الحضانة",
-    "courseStudents": "طلاب الدورات",
+    "courseStudents": "طلاب الدرس",
     "activeStudents": "الطلاب النشطين",
     "monthlyFees": "الرسوم الشهرية",
     "monthlySalaries": "المرتبات الشهرية",
@@ -47,7 +47,7 @@
     "profitTrend": "تطور الأرباح",
     "feesVsSalaries": "الرسوم والمرتبات",
     "unpaidNurseryStudents": "طلاب الحضانة المتأخرين",
-    "unpaidCourseStudents": "طلاب الدورات المتأخرين",
+    "unpaidCourseStudents": "طلاب الدرس المتأخرين",
     "employeeSalaryStatus": "حالة رواتب الموظفين",
     "quickActions": "إجراءات سريعة",
     "addStudent": "إضافة طالب",
@@ -59,7 +59,13 @@
     "loading": "جاري التحميل...",
     "noData": "لا توجد بيانات",
     "error": "حدث خطأ",
-    "retry": "إعادة المحاولة"
+    "retry": "إعادة المحاولة",
+    "unpaidStudentsAll": "الطلاب المتأخرين (حضانة وكورسات)",
+    "searchByNameOrPhone": "بحث بالاسم او رقم الهاتف...",
+    "searchByNameOrRole": "بحث بالاسم او الوظيفة...",
+    "allPaid": "جميع الطلاب مسددين",
+    "late": "متأخر",
+    "pending": "معلق"
   },
   "students": {
     "title": "إدارة الطلاب",
@@ -122,8 +128,8 @@
     "paymentStatus": "حالة الدفع",
     "paymentDate": "تاريخ الدفع",
     "notes": "ملاحظات",
-    "unpaid": "غير مدفوع",
-    "paid": "مدفوع"
+    "unpaid": "غير دافع",
+    "paid": "دافع"
   },
   "salaries": {
     "title": "إدارة المرتبات",
@@ -191,7 +197,9 @@
     "number": "يجب أن يكون رقماً",
     "positive": "يجب أن يكون رقماً موجباً",
     "min": "القيمة يجب أن تكون {{min}} على الأقل",
-    "max": "القيمة يجب ألا تتجاوز {{max}}"
+    "max": "القيمة يجب ألا تتجاوز {{max}}",
+    "passwordLength": "كلمة المرور يجب أن تكون {{min}} أحرف على الأقل",
+    "mustLogin": "يجب تسجيل الدخول كـ Admin أولاً"
   },
   "messages": {
     "addSuccess": "تمت الإضافة بنجاح",
@@ -203,7 +211,13 @@
     "deleteConfirm": "هل أنت متأكد من الحذف؟",
     "deleteWarning": "هذا الإجراء لا يمكن التراجع عنه",
     "networkError": "خطأ في الاتصال. تأكد من تشغيل السيرفر",
-    "loadingError": "فشل تحميل البيانات"
+    "loadingError": "فشل تحميل البيانات",
+    "alreadyPaid": "تم الدفع بالفعل لهذا الشهر",
+    "duplicateError": "تم اكتشاف سجلات مكررة. يرجى حذف التكرارات أولاً",
+    "databaseConflict": "تم اكتشاف تعارض في قاعدة البيانات",
+    "multipleRecords": "هذا الموظف لديه سجلات دفع متعددة",
+    "deleteBeforeEdit": "يجب حذف التكرارات قبل التعديل",
+    "noNotes": "لا توجد ملاحظات"
   },
   "months": {
     "1": "يناير",
@@ -218,5 +232,100 @@
     "10": "أكتوبر",
     "11": "نوفمبر",
     "12": "ديسمبر"
+  },
+  "print": {
+    "invoice": "فاتورة الرسوم الشهرية",
+    "studentInfo": "معلومات الطالب",
+    "studentName": "اسم الطالب",
+    "type": "النوع",
+    "month": "الشهر",
+    "paymentStatus": "حالة الدفع",
+    "amountDue": "المبلغ المستحق",
+    "egp": "جنيه مصري",
+    "notes": "ملاحظات",
+    "printDate": "تاريخ الطباعة",
+    "thankYou": "شكراً لثقتكم بنا ❤️",
+    "nurseryName": "حضانة الأمل",
+    "nurserySystem": "نظام إدارة الحضانة",
+    "monthlyReport": "تقرير الرسوم الشهرية",
+    "profitReport": "تقرير الأرباح والمصروفات الشهرية",
+    "year": "عام",
+    "totalStudents": "إجمالي الطلاب",
+    "paidStudents": "الطلاب المدفوعين",
+    "unpaidStudents": "الطلاب غير المدفوعين",
+    "totalCollected": "إجمالي المبالغ المحصلة",
+    "printInvoice": "طباعة الفاتورة",
+    "printReport": "طباعة التقرير",
+    "printMonthlyReport": "طباعة التقرير الشهري",
+    "printMonth": "طباعة الشهر",
+    "monthlyPaymentReport": "تقرير الدفع الشهري",
+    "allStudents": "جميع الطلاب",
+    "studentsPaid": "الطلاب الذين دفعوا",
+    "studentsNotPaid": "الطلاب الذين لم يدفعوا",
+    "serialNumber": "#",
+    "level": "المستوى",
+    "amount": "المبلغ",
+    "status": "الحالة",
+    "paid": "✓ مدفوع",
+    "unpaid": "✗ غير مدفوع",
+    "monthlyFees": "الرسوم الشهرية",
+    "monthlySalaries": "الرواتب الشهرية",
+    "supplies": "المستلزمات",
+    "netProfit": "صافي الربح"
+  },
+  "filters": {
+    "searchByName": "بحث بالاسم...",
+    "allTypes": "جميع الانواع",
+    "nursery": "حضانة",
+    "course": "كورس",
+    "selectType": "اختر النوع",
+    "allClasses": "كل الفصول",
+    "allGrades": "كل الصفوف",
+    "grade": "الصف",
+    "first": "الأول",
+    "second": "الثاني",
+    "third": "الثالث",
+    "fourth": "الرابع",
+    "fifth": "الخامس",
+    "sixth": "السادس",
+    "selectPaymentStatus": "اختر حاله الدفع",
+    "payer": "دافع",
+    "nonPayer": "غير دافع",
+    "gradeFirst": "الصف الأول",
+    "gradeSecond": "الصف الثاني",
+    "gradeThird": "الصف الثالث",
+    "gradeFourth": "الصف الرابع",
+    "gradeFifth": "الصف الخامس",
+    "gradeSixth": "الصف السادس"
+  },
+  "status": {
+    "paid": "✓ مدفوع",
+    "unpaid": "✗ غير مدفوع",
+    "loading": "جاري التحميل...",
+    "loadingReport": "جاري تحميل التقرير...",
+    "creating": "جاري الإنشاء...",
+    "dataChanged": "البيانات تغيرت. جاري إعادة التحميل...",
+    "noPrintData": "لا توجد بيانات للطباعة"
+  },
+  "register": {
+    "secretCode": "الكود السري",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "incorrectCode": "الكود السري غير صحيح!",
+    "passwordMismatch": "كلمات المرور غير متطابقة",
+    "unauthorized": "غير مصرح لك بإنشاء مستخدمين (Admin فقط)",
+    "dataError": "خطأ في البيانات المدخلة",
+    "title": "إنشاء مستخدم جديد",
+    "success": "تم إنشاء المستخدم بنجاح!",
+    "username": "اسم المستخدم",
+    "enterUsername": "أدخل اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "passwordPlaceholder": "6 أحرف على الأقل",
+    "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور",
+    "role": "الصلاحية",
+    "secretCodeVerify": "(للتحقق)",
+    "enterSecretCode": "أدخل الكود السري",
+    "createUser": "إنشاء المستخدم",
+    "backToDashboard": "العودة للوحة التحكم"
   }
 }

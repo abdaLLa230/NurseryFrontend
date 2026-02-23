@@ -20,6 +20,7 @@ export default defineConfig({
       compress: {
         drop_console: true, // Remove console.log in production
         drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
       },
     },
     
@@ -33,6 +34,10 @@ export default defineConfig({
           'ui-vendor': ['lucide-react', 'sweetalert2'],
           'i18n-vendor': ['i18next', 'react-i18next'],
         },
+        // Optimize chunk file names
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
       },
     },
     
@@ -41,6 +46,12 @@ export default defineConfig({
     
     // Source maps for debugging (disable in production)
     sourcemap: false,
+    
+    // CSS code splitting
+    cssCodeSplit: true,
+    
+    // Optimize assets
+    assetsInlineLimit: 4096, // 4kb
   },
   
   // Optimize dependencies

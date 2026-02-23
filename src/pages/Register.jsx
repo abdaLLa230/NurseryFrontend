@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Lock, Mail, User, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
@@ -8,6 +9,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'https://localhost:7001';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -33,18 +35,18 @@ const Register = () => {
 
     // التحقق من الكود السري أولاً
     if (formData.secretCode.toLowerCase() !== 'abdallah') {
-      setError('الكود السري غير صحيح!');
+      setError(t('register.incorrectCode'));
       return;
     }
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
-      setError('كلمات المرور غير متطابقة');
+      setError(t('register.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+      setError(t('validation.minLength', { min: 6 }));
       return;
     }
 
@@ -54,7 +56,7 @@ const Register = () => {
       const token = localStorage.getItem('token');
       
       if (!token) {
-        setError('يجب تسجيل الدخول كـ Admin أولاً');
+        setError(t('register.unauthorized'));
         setLoading(false);
         return;
       }
@@ -87,11 +89,11 @@ const Register = () => {
       setTimeout(() => setSuccess(false), 5000);
     } catch (err) {
       if (err.response?.status === 401) {
-        setError('غير مصرح لك بإنشاء مستخدمين (Admin فقط)');
+        setError(t('register.unauthorized'));
       } else if (err.response?.status === 400) {
-        setError(err.response.data.message || 'خطأ في البيانات المدخلة');
+        setError(err.response.data.message || t('register.dataError'));
       } else {
-        setError('حدث خطأ أثناء إنشاء المستخدم');
+        setError(t('messages.error'));
       }
     } finally {
       setLoading(false);
@@ -113,7 +115,12 @@ const Register = () => {
         transition={{ duration: 0.6 }}
         className="relative z-10 w-full max-w-2xl bg-white rounded-2xl shadow-xl md:px-8 px-4 py-5 mt-10 mx-2"
       >
-        <h2 className="text-3xl font-bold text-center text-blue-700 pb-8">إنشاء مستخدم جديد</h2>
+        {/* Logo */}
+        <div className="flex justify-center mb-4">
+          <img src="/NurseryLogo.png" alt={t('print.nurseryName')} className="w-24 h-24 object-cover rounded-full" />
+        </div>
+        
+        <h2 className="text-3xl font-bold text-center text-blue-700 pb-8">{t('register.title') || 'إنشاء مستخدم جديد'}</h2>
 
         {/* Success Message */}
         {success && (
@@ -123,7 +130,7 @@ const Register = () => {
             className="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl flex items-center text-sm gap-2"
           >
             <CheckCircle className="w-5 h-5 shrink-0" />
-            <p>تم إنشاء المستخدم بنجاح!</p>
+            <p>{t('register.success') || 'تم إنشاء المستخدم بنجاح!'}</p>
           </motion.div>
         )}
 
@@ -144,7 +151,7 @@ const Register = () => {
           {/* Username */}
           <div className="mb-2 md:mb-0">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              اسم المستخدم
+              {t('register.username')}
             </label>
             <div className="flex items-center gap-3 bg-blue-50 px-3 py-3 rounded-lg border border-blue-100">
               <User className="text-blue-400 w-5 h-5 shrink-0" />
@@ -152,7 +159,7 @@ const Register = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                placeholder="أدخل اسم المستخدم"
+                placeholder={t('register.enterUsername')}
                 className="bg-transparent outline-none w-full text-sm text-gray-800 cursor-text"
                 required
               />
@@ -162,7 +169,7 @@ const Register = () => {
           {/* Email */}
           <div className="mb-2 md:mb-0">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              البريد الإلكتروني
+              {t('register.email')}
             </label>
             <div className="flex items-center gap-3 bg-blue-50 px-3 py-3 rounded-lg border border-blue-100">
               <Mail className="text-blue-400 w-5 h-5 shrink-0" />
@@ -181,7 +188,7 @@ const Register = () => {
           {/* Password */}
           <div className="mb-2 md:mb-0">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              كلمة المرور
+              {t('register.password')}
             </label>
             <div className="flex items-center gap-3 bg-blue-50 px-3 py-3 rounded-lg border border-blue-100">
               <Lock className="text-blue-400 w-5 h-5 shrink-0" />
@@ -190,7 +197,7 @@ const Register = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="6 أحرف على الأقل"
+                placeholder={t('register.passwordPlaceholder')}
                 className="bg-transparent outline-none w-full text-sm text-gray-800 cursor-text"
                 required
                 minLength={6}
@@ -208,7 +215,7 @@ const Register = () => {
           {/* Confirm Password */}
           <div className="mb-2 md:mb-0">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              تأكيد كلمة المرور
+              {t('register.confirmPassword')}
             </label>
             <div className="flex items-center gap-3 bg-blue-50 px-3 py-3 rounded-lg border border-blue-100">
               <Lock className="text-blue-400 w-5 h-5 shrink-0" />
@@ -217,7 +224,7 @@ const Register = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="أعد إدخال كلمة المرور"
+                placeholder={t('register.confirmPasswordPlaceholder')}
                 className="bg-transparent outline-none w-full text-sm text-gray-800 cursor-text"
                 required
               />
@@ -234,7 +241,7 @@ const Register = () => {
           {/* Role */}
           <div className="mb-2 md:mb-0">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              الصلاحية
+              {t('register.role')}
             </label>
             <select
               name="role"
@@ -250,7 +257,7 @@ const Register = () => {
           {/* Secret Code */}
           <div className="mb-2 md:mb-0">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              الكود السري <span className="text-xs text-gray-500">(للتحقق)</span>
+              {t('register.secretCode')} <span className="text-xs text-gray-500">{t('register.secretCodeVerify')}</span>
             </label>
             <div className="flex items-center gap-3 bg-amber-50 px-3 py-3 rounded-lg border border-amber-200">
               <Lock className="text-amber-500 w-5 h-5 shrink-0" />
@@ -259,7 +266,7 @@ const Register = () => {
                 name="secretCode"
                 value={formData.secretCode}
                 onChange={handleChange}
-                placeholder="أدخل الكود السري"
+                placeholder={t('register.enterSecretCode')}
                 className="bg-transparent outline-none w-full text-sm text-gray-800 cursor-text"
                 required
               />
@@ -275,10 +282,10 @@ const Register = () => {
           {loading ? (
             <div className="flex items-center justify-center gap-2">
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              جاري الإنشاء...
+              {t('status.creating')}
             </div>
           ) : (
-            'إنشاء المستخدم'
+            t('register.createUser')
           )}
         </button>
 
@@ -287,7 +294,7 @@ const Register = () => {
           onClick={() => navigate('/')}
           className="w-full py-3 rounded-lg text-gray-700 font-semibold text-sm bg-gray-100 hover:bg-gray-200 transition mt-3 cursor-pointer"
         >
-          العودة للوحة التحكم
+          {t('register.backToDashboard')}
         </button>
 
        

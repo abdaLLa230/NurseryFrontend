@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { dashboardAPI } from '../services/api';
-import { AlertCircle, RefreshCw, TrendingUp, DollarSign, Wallet, ShoppingCart, Users } from 'lucide-react';
+import { AlertCircle, RefreshCw, TrendingUp, DollarSign, Wallet, Users, Printer } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 const Reports = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [profitSummary, setProfitSummary] = useState(null);
     const [profitTrend, setProfitTrend] = useState([]);
     const [studentCounts, setStudentCounts] = useState(null);
@@ -36,12 +38,58 @@ const Reports = () => {
         finally { setLoading(false); }
     };
 
+    const printMonthlyBreakdown = () => {
+        if (profitTrend.length === 0) return;
+        const w = window.open('', '_blank');
+        w.document.body.innerHTML = `
+          <div style="font-family:Arial;max-width:1000px;margin:40px auto;padding:30px;border:2px solid #333;direction:rtl">
+            <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #333;padding-bottom:20px;margin-bottom:30px">
+              <div style="text-align:center;flex:1">
+                <h1 style="margin:0 0 10px">حضانة الأمل</h1>
+                <p style="margin:0;color:#666">تقرير الأرباح والمصروفات الشهرية - عام ${new Date().getFullYear()}</p>
+              </div>
+              <img src="/NurseryLogo.png" alt="حضانة الأمل" style="width:80px;height:80px;object-fit:cover;border-radius:50%;flex-shrink:0" />
+            </div>
+            <table style="width:100%;border-collapse:collapse;border:2px solid #333;direction:rtl">
+              <thead style="background:#333;color:white">
+                <tr>
+                  <th style="padding:12px;text-align:center;border:1px solid #333">الشهر</th>
+                  <th style="padding:12px;text-align:center;border:1px solid #333">الرسوم الشهرية</th>
+                  <th style="padding:12px;text-align:center;border:1px solid #333">الرواتب الشهرية</th>
+                  <th style="padding:12px;text-align:center;border:1px solid #333">المستلزمات</th>
+                  <th style="padding:12px;text-align:center;border:1px solid #333">صافي الربح</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${profitTrend.map((row, i) => `
+                  <tr style="border-bottom:1px solid #ddd;${i % 2 === 0 ? 'background:#f9f9f9' : ''}">
+                    <td style="padding:10px;border:1px solid #ddd;font-weight:bold;text-align:center">${row.monthName}</td>
+                    <td style="padding:10px;border:1px solid #ddd;color:#10b981;font-weight:600;text-align:center">${row.fees?.toLocaleString()}</td>
+                    <td style="padding:10px;border:1px solid #ddd;color:#f59e0b;font-weight:600;text-align:center">${row.salaries?.toLocaleString()}</td>
+                    <td style="padding:10px;border:1px solid #ddd;color:#6366f1;font-weight:600;text-align:center">${row.supplies?.toLocaleString()}</td>
+                    <td style="padding:10px;border:1px solid #ddd;font-weight:bold;font-size:16px;text-align:center">${row.profit?.toLocaleString()}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+        setTimeout(() => w.print(), 300);
+    };
+
     if (error) {
         return (<div className="card text-center py-12"><AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-3" /><p className="text-gray-700 dark:text-gray-300 mb-3">{error}</p><button onClick={fetchAll} className="btn btn-primary"><RefreshCw className="w-4 h-4" /> {t('dashboard.retry')}</button></div>);
     }
 
     if (loading) {
-        return (<div className="card text-center py-16"><div className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto"></div></div>);
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-gray-600 dark:text-gray-400 text-lg">{t('status.loadingReport')}</p>
+                </div>
+            </div>
+        );
     }
 
     return (
@@ -54,17 +102,21 @@ const Reports = () => {
             {/* Summary Stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
                 {[
-                    { label: t('dashboard.totalRevenue'), val: profitSummary?.totalPaidFees?.toLocaleString() || 0, icon: DollarSign, color: 'bg-emerald-600' },
-                    { label: t('dashboard.monthlySalaries'), val: profitSummary?.totalPaidSalaries?.toLocaleString() || 0, icon: Wallet, color: 'bg-amber-600' },
-                    { label: t('dashboard.netProfit'), val: profitSummary?.actualNetProfit?.toLocaleString() || 0, icon: TrendingUp, color: 'bg-indigo-600' },
-                    { label: t('dashboard.totalStudents'), val: studentCounts?.totalStudents || 0, icon: Users, color: 'bg-blue-600' },
+                    { label: t('dashboard.totalRevenue'), val: profitSummary?.totalPaidFees?.toLocaleString() || 0, icon: DollarSign, color: 'bg-emerald-600', link: '/fees' },
+                    { label: t('dashboard.monthlySalaries'), val: profitSummary?.totalPaidSalaries?.toLocaleString() || 0, icon: Wallet, color: 'bg-amber-600', link: '/salaries' },
+                    { label: t('dashboard.netProfit'), val: profitSummary?.actualNetProfit?.toLocaleString() || 0, icon: TrendingUp, color: 'bg-indigo-600', link: '/reports' },
+                    { label: t('dashboard.totalStudents'), val: studentCounts?.totalStudents || 0, icon: Users, color: 'bg-blue-600', link: '/students' },
                 ].map((s, i) => (
-                    <div key={i} className="card-stat">
+                    <div 
+                        key={i} 
+                        className="card-stat cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                        onClick={() => navigate(s.link)}
+                    >
                         <div className="flex items-center gap-2.5 mb-2">
                             <div className={`w-8 h-8 rounded-lg ${s.color} flex items-center justify-center`}><s.icon className="w-4 h-4 text-white" /></div>
-                            <span className="text-xs text-gray-500 dark:text-gray-400">{s.label}</span>
+                            <span className="text-sm text-gray-500 dark:text-gray-400">{s.label}</span>
                         </div>
-                        <p className="text-xl font-bold text-gray-900 dark:text-white">{s.val} {typeof s.val === 'number' ? '' : t('common.egp')}</p>
+                        <p className="text-2xl font-bold text-gray-900 dark:text-white">{s.val} {typeof s.val === 'number' ? '' : t('common.egp')}</p>
                     </div>
                 ))}
             </div>
@@ -116,8 +168,12 @@ const Reports = () => {
             {/* Monthly Breakdown Table */}
             {profitTrend.length > 0 && (
                 <div className="card !p-0 overflow-hidden">
-                    <div className="p-4 border-b border-gray-100 dark:border-gray-800">
+                    <div className="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
                         <h2 className="text-base font-semibold text-gray-900 dark:text-white">{t('dashboard.profitTrend')}</h2>
+                        <button onClick={printMonthlyBreakdown} className="btn btn-primary !py-2 !px-4 flex items-center gap-2">
+                            <Printer className="w-4 h-4" />
+                            {t('print.printReport')}
+                        </button>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-sm">

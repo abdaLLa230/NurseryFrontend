@@ -10,7 +10,7 @@ const FormSelect = ({
   error,
   required = false,
   disabled = false,
-  placeholder = 'اختر...',
+  placeholder = '',
   className = '',
   selectClassName = '',
   ...props

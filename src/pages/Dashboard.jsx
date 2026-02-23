@@ -22,14 +22,6 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDashboard();
     fetchProfitTrend();
-
-    // Auto-refresh every 10 seconds without showing loading spinner
-    const interval = setInterval(() => {
-      fetchDashboard(true);
-      fetchProfitTrend();
-    }, 10000);
-
-    return () => clearInterval(interval);
   }, [selectedMonth, selectedYear]);
 
   const fetchDashboard = async (isSilent = false) => {
@@ -121,7 +113,7 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-2">
               <h3 className="text-base font-semibold text-gray-900 dark:text-white">
-                {language === 'ar' ? 'الطلاب المتأخرين (حضانة وكورسات)' : 'Unpaid Students (All)'}
+                {t('dashboard.unpaidStudentsAll')}
               </h3>
               <span className="text-xs font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 px-2 py-1 rounded-full">
                 {(dashboardData?.nurseryStudentsNotPaid?.length || 0) + (dashboardData?.courseStudentsNotPaid?.length || 0)}
@@ -130,7 +122,7 @@ const Dashboard = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder={language === 'ar' ? 'بحث بالاسم او رقم الهاتف...' : 'Search by name or phone...'}
+                placeholder={t('dashboard.searchByNameOrPhone')}
                 value={unpaidSearch}
                 onChange={(e) => setUnpaidSearch(e.target.value)}
                 className="input py-1.5 px-3 text-sm w-full sm:w-48 bg-gray-50 dark:bg-gray-800"
@@ -156,7 +148,7 @@ const Dashboard = () => {
                 return (
                   <div className="text-center py-8">
                     <CheckCircle className="w-8 h-8 mx-auto mb-2 text-emerald-500" />
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{language === 'ar' ? 'جميع الطلاب مسددين' : 'All paid'}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.allPaid')}</p>
                   </div>
                 );
               }
@@ -175,12 +167,12 @@ const Dashboard = () => {
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-gray-900 dark:text-white text-sm">{s.childName}</p>
                       <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                        {s.studentLevel === 'Nursery' || !s.studentLevel ? (language === 'ar' ? 'حضانة' : 'Nursery') : (language === 'ar' ? 'كورس' : 'Course')}
+                        {s.studentLevel === 'Nursery' || !s.studentLevel ? t('students.nursery') : t('students.course')}
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{s.parentPhone}</p>
                   </div>
-                  <span className="pill-unpaid whitespace-nowrap">{language === 'ar' ? 'متأخر' : 'Unpaid'}</span>
+                  <span className="pill-unpaid whitespace-nowrap">{t('dashboard.late')}</span>
                 </div>
               ));
             })()}
@@ -199,7 +191,7 @@ const Dashboard = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder={language === 'ar' ? 'بحث بالاسم او الوظيفة...' : 'Search by name or role...'}
+                placeholder={t('dashboard.searchByNameOrRole')}
                 value={employeeSearch}
                 onChange={(e) => setEmployeeSearch(e.target.value)}
                 className="input py-1.5 px-3 text-sm w-full sm:w-48 bg-gray-50 dark:bg-gray-800"
@@ -233,7 +225,7 @@ const Dashboard = () => {
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{emp.role} • {emp.monthlySalary?.toLocaleString()} {t('common.egp')}</p>
                   </div>
                   <span className={emp.salaryStatus === 'Paid' ? 'pill-paid whitespace-nowrap' : 'pill-unpaid whitespace-nowrap'}>
-                    {emp.salaryStatus === 'Paid' ? (language === 'ar' ? 'مدفوع' : 'Paid') : (language === 'ar' ? 'معلق' : 'Pending')}
+                    {emp.salaryStatus === 'Paid' ? t('fees.paid') : t('dashboard.pending')}
                   </span>
                 </div>
               ));
@@ -245,10 +237,16 @@ const Dashboard = () => {
       {/* Charts */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-6 mb-6">
         <div className="card">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">{t('dashboard.profitTrend')}</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <BarChartIcon className="w-4 h-4" />
+            {t('dashboard.profitTrend')}
+          </h3>
           {loading && !dashboardData || profitTrend.length === 0 ? (
             <div className="flex items-center justify-center h-64">
-              <div className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="text-center">
+                <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 dark:border-indigo-900 dark:border-t-indigo-400 rounded-full animate-spin mx-auto mb-3"></div>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">{t('status.loading')}</p>
+              </div>
             </div>
           ) : (
             <div className="h-[250px] sm:h-[300px] w-full mt-4">
@@ -270,10 +268,16 @@ const Dashboard = () => {
         </div>
 
         <div className="card">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4">{t('dashboard.feesVsSalaries')}</h3>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4" />
+            {t('dashboard.feesVsSalaries')}
+          </h3>
           {loading && !dashboardData || profitTrend.length === 0 ? (
             <div className="flex items-center justify-center h-64">
-              <div className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="text-center">
+                <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 dark:border-indigo-900 dark:border-t-indigo-400 rounded-full animate-spin mx-auto mb-3"></div>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">{t('status.loading')}</p>
+              </div>
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={260}>

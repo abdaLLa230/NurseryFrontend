@@ -85,6 +85,11 @@ export const feesAPI = {
   pay: (data) => api.post('/fees/pay', data),
   update: (id, data) => api.put(`/fees/${id}`, data),
   delete: (id) => api.delete(`/fees/${id}`),
+  
+  // الوظائف الجديدة
+  generateInvoice: (studentId, month, year) => api.get(`/fees/invoice/${studentId}/${month}/${year}`),
+  getAnnualRevenue: (year) => api.get(`/fees/annual-revenue/${year}`),
+  getStudentsWhoPaid: (month, year) => api.get(`/fees/students-paid/${month}/${year}`),
 };
 
 // Salaries APIs

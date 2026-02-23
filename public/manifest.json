@@ -1,6 +1,6 @@
 {
-  "name": "نظام إدارة الحضانة",
-  "short_name": "إدارة الحضانة",
+  "name": "حضانة الأمل - نظام إدارة الحضانة",
+  "short_name": "حضانة الأمل",
   "description": "نظام متكامل لإدارة الحضانات والدورات التعليمية",
   "start_url": "/",
   "display": "standalone",
@@ -11,9 +11,9 @@
   "lang": "ar",
   "icons": [
     {
-      "src": "/logo.svg",
+      "src": "/NurseryLogo.png",
       "sizes": "any",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],

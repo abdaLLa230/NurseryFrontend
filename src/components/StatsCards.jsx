@@ -14,12 +14,12 @@ const StatCard = ({ icon: Icon, title, value, color, loading, path }) => {
         <div className={`w-10 h-10 rounded-lg ${color} flex items-center justify-center`}>
           <Icon className="w-5 h-5 text-white" />
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{title}</p>
+        <p className="text-base text-gray-500 dark:text-gray-400 font-medium">{title}</p>
       </div>
       {loading ? (
         <div className="h-8 bg-gray-100 dark:bg-gray-800 rounded w-20 animate-pulse"></div>
       ) : (
-        <p className="text-2xl font-bold text-gray-900 dark:text-white">
+        <p className="text-3xl font-bold text-gray-900 dark:text-white">
           {value?.toLocaleString() || 0}
         </p>
       )}

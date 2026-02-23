@@ -54,6 +54,11 @@ export default function Login() {
         className="relative z-10 w-full max-w-lg bg-white rounded-2xl shadow-xl md:px-8 px-4 py-8 mx-2"
         dir={isRTL ? "rtl" : "ltr"}
       >
+        {/* Logo */}
+        <div className="flex justify-center mb-4">
+          <img src="/NurseryLogo.png" alt={t('print.nurseryName')} className="w-24 h-24 object-cover rounded-full" />
+        </div>
+        
         <h2 className="text-3xl font-bold text-center text-blue-700">{t('auth.login')}</h2>
         <p className="text-center text-gray-500 mt-2 mb-6">
           {t('auth.loginSubtitle')}

@@ -9,12 +9,15 @@ const Header = ({ onMenuClick }) => {
 
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
-      <button onClick={onMenuClick} className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
-        <Menu className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-      </button>
-
-      <div className="hidden lg:block">
-        <p className="text-sm text-gray-500 dark:text-gray-400">{t('auth.welcome')}</p>
+      <div className="flex items-center gap-3">
+        <button onClick={onMenuClick} className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
+          <Menu className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        </button>
+        
+        {/* Logo */}
+        <div className="flex items-center gap-2">            
+            <p className="text-md text-gray-500 dark:text-gray-400">{t('auth.welcome')}</p>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -37,7 +40,7 @@ const Header = ({ onMenuClick }) => {
           className="flex items-center gap-1.5 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors text-sm font-medium text-gray-600 dark:text-gray-400"
         >
           <Globe className="w-[18px] h-[18px]" />
-          {language === 'ar' ? 'EN' : 'عربي'}
+          {language === 'ar' ? 'EN' : 'AR'}
         </button>
       </div>
     </header>
