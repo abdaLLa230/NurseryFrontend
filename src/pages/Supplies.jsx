@@ -38,7 +38,7 @@ const Supplies = () => {
         s.name?.toLowerCase().includes(searchTerm.toLowerCase()) &&
         s.purchaseMonth === selectedMonth &&
         s.purchaseYear === selectedYear
-    );
+    ).sort((a, b) => a.name.localeCompare(b.name, 'ar'));
     const totalCost = filtered.reduce((sum, s) => sum + (s.price || 0), 0);
 
     const resetForm = () => {

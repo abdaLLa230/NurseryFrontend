@@ -48,7 +48,7 @@ const Reports = () => {
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>تقرير ${new Date().getFullYear()}</title>
+            <title>تقرير الأرباح السنوي ${new Date().getFullYear()}</title>
             <style>
               @page { 
                 margin: 0.8cm; 
@@ -62,10 +62,6 @@ const Reports = () => {
                   print-color-adjust: exact;
                 }
                 .no-print { display: none !important; }
-                .legend { 
-                  page-break-inside: avoid;
-                  break-inside: avoid;
-                }
               }
               * {
                 margin: 0;
@@ -80,42 +76,79 @@ const Reports = () => {
                 max-width: 100%;
                 margin: 0 auto;
               }
-              .legend { 
-                display: flex; 
-                justify-content: center; 
-                gap: 30px; 
-                margin-top: 25px;
+              .header {
+                text-align: center;
+                margin-bottom: 25px;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #333;
+              }
+              .header h1 {
+                font-size: 26px;
+                margin-bottom: 8px;
+                color: #333;
+              }
+              .header p {
+                font-size: 14px;
+                color: #666;
+                margin: 3px 0;
+              }
+              .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+                margin-bottom: 25px;
+              }
+              .stat-card {
+                background: #f9fafb;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
                 padding: 15px;
-                flex-wrap: wrap;
-                page-break-inside: avoid;
-                break-inside: avoid;
+                text-align: center;
               }
-              .legend-item { 
-                display: flex; 
-                align-items: center; 
-                gap: 10px; 
-                font-size: 15px;
-                font-weight: 600;
+              .stat-label {
+                font-size: 12px;
+                color: #6b7280;
+                margin-bottom: 8px;
               }
-              .legend-color { 
-                width: 24px; 
-                height: 24px; 
-                border-radius: 4px;
-                flex-shrink: 0;
+              .stat-value {
+                font-size: 20px;
+                font-weight: bold;
+                color: #111827;
               }
+              .stat-card.revenue { border-right: 3px solid #10b981; }
+              .stat-card.salaries { border-right: 3px solid #f59e0b; }
+              .stat-card.expenses { border-right: 3px solid #f97316; }
+              .stat-card.profit { border-right: 3px solid #6366f1; }
             </style>
           </head>
           <body>
             <div class="container">
-              <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #333;padding-bottom:20px;margin-bottom:30px">
-                <div style="text-align:center;flex:1">
-                  <h1 style="margin:0 0 10px;font-size:28px">حضانة الأمل</h1>
-                  <p style="margin:0;color:#666;font-size:16px">تقرير الأرباح والمصروفات الشهرية - عام ${new Date().getFullYear()}</p>
-                  <p style="margin:5px 0 0;color:#999;font-size:14px">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                </div>
-                <img src="${window.location.origin}/NurseryLogo.png" alt="حضانة الأمل" style="width:80px;height:80px;object-fit:cover;border-radius:50%;flex-shrink:0" onerror="this.style.display='none'" />
+              <div class="header">
+                <h1>حضانة الأمل</h1>
+                <p>تقرير الأرباح والمصروفات السنوية - عام ${new Date().getFullYear()}</p>
+                <p style="font-size:12px;color:#999">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
               </div>
-              <table style="width:100%;border-collapse:collapse;border:2px solid #333;direction:rtl">
+              
+              <div class="stats-grid">
+                <div class="stat-card revenue">
+                  <div class="stat-label">إجمالي الإيرادات</div>
+                  <div class="stat-value">${profitSummary?.totalPaidFees?.toLocaleString() || 0} جنيه</div>
+                </div>
+                <div class="stat-card salaries">
+                  <div class="stat-label">إجمالي الرواتب</div>
+                  <div class="stat-value">${profitSummary?.totalPaidSalaries?.toLocaleString() || 0} جنيه</div>
+                </div>
+                <div class="stat-card expenses">
+                  <div class="stat-label">إجمالي المصروفات</div>
+                  <div class="stat-value">${profitSummary?.totalSupplies?.toLocaleString() || 0} جنيه</div>
+                </div>
+                <div class="stat-card profit">
+                  <div class="stat-label">صافي الربح</div>
+                  <div class="stat-value">${profitSummary?.actualNetProfit?.toLocaleString() || 0} جنيه</div>
+                </div>
+              </div>
+              
+              <table style="width:100%;border-collapse:collapse;border:2px solid #333">
                 <thead style="background:#333;color:white">
                   <tr>
                     <th style="padding:12px;text-align:center;border:1px solid #333">الشهر</th>
@@ -137,20 +170,6 @@ const Reports = () => {
                   `).join('')}
                 </tbody>
               </table>
-              <div class="legend">
-                <div class="legend-item">
-                  <div class="legend-color" style="background:#10b981"></div>
-                  <span>الرسوم الشهرية</span>
-                </div>
-                <div class="legend-item">
-                  <div class="legend-color" style="background:#f59e0b"></div>
-                  <span>الرواتب الشهرية</span>
-                </div>
-                <div class="legend-item">
-                  <div class="legend-color" style="background:#f97316"></div>
-                  <span>المصروفات الشهرية</span>
-                </div>
-              </div>
             </div>
           </body>
           </html>
@@ -212,19 +231,34 @@ const Reports = () => {
 
     return (
         <div>
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('nav.reports')}</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{new Date().getFullYear()}</p>
+            <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('nav.reports')}</h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{new Date().getFullYear()}</p>
+                </div>
+                
+                {/* Total Students Card */}
+                <div 
+                    className="card-stat cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all duration-200 w-auto py-4"
+                    onClick={() => navigate('/students')}
+                >
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                        <div className="w-6 h-6 rounded-lg bg-blue-600 flex items-center justify-center">
+                            <Users className="w-3 h-3 text-white" />
+                        </div>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{t('dashboard.totalStudents')}</span>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{studentCounts?.totalStudents || 0}</p>
+                </div>
             </div>
 
             {/* Summary Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
                 {[
                     { label: t('dashboard.totalRevenue'), val: profitSummary?.totalPaidFees?.toLocaleString() || 0, icon: DollarSign, color: 'bg-emerald-600', link: '/fees' },
                     { label: t('dashboard.monthlySalaries'), val: profitSummary?.totalPaidSalaries?.toLocaleString() || 0, icon: Wallet, color: 'bg-amber-600', link: '/salaries' },
                     { label: t('dashboard.totalExpenses'), val: profitSummary?.totalSupplies?.toLocaleString() || 0, icon: TrendingUp, color: 'bg-orange-600', link: '/supplies' },
                     { label: t('dashboard.netProfit'), val: profitSummary?.actualNetProfit?.toLocaleString() || 0, icon: TrendingUp, color: 'bg-indigo-600', link: '/reports' },
-                    { label: t('dashboard.totalStudents'), val: studentCounts?.totalStudents || 0, icon: Users, color: 'bg-blue-600', link: '/students' },
                 ].map((s, i) => (
                     <div 
                         key={i} 

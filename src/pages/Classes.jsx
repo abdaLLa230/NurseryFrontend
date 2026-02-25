@@ -42,7 +42,15 @@ const Classes = () => {
         }));
     }, [classes, students]);
 
-    const filtered = classesWithCounts.filter(c => c.className?.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filtered = classesWithCounts.filter(c => c.className?.toLowerCase().includes(searchTerm.toLowerCase()))
+        .sort((a, b) => {
+            // ترتيب حسب النوع أولاً (Nursery قبل Course)
+            if (a.classType !== b.classType) {
+                return a.classType === 'Nursery' ? -1 : 1;
+            }
+            // ثم ترتيب أبجدي حسب الاسم
+            return a.className.localeCompare(b.className, 'ar');
+        });
     const resetForm = () => { setFormData({ className: '', classType: 'Nursery', level: NURSERY_LEVELS[0] }); setEditingClass(null); };
 
     const openEdit = (c) => {

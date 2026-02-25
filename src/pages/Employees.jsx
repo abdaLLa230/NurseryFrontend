@@ -57,7 +57,7 @@ const Employees = () => {
         e.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         e.phone?.includes(searchTerm) ||
         e.role?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    ).sort((a, b) => a.name.localeCompare(b.name, 'ar'));
 
     const resetForm = () => {
         setFormData({

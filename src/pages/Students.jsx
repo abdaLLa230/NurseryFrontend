@@ -40,7 +40,7 @@ const Students = () => {
     const matchLevel = filterLevel === 'all' || s.studentLevel === filterLevel;
     const matchStatus = filterStatus === 'all' || (filterStatus === 'active' && s.isActive) || (filterStatus === 'inactive' && !s.isActive);
     return matchSearch && matchType && matchLevel && matchStatus;
-  });
+  }).sort((a, b) => a.childName.localeCompare(b.childName, 'ar'));
 
   const stats = {
     total: students.length,
