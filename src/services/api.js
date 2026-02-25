@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// في التطوير: استخدم /api ليعمل مع Vite proxy (يتحول إلى https://localhost:7001)
-// في الإنتاج: استخدم متغير البيئة أو رابط الـ API
-const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'https://localhost:7001/api');
+// في التطوير: استخدم /api ليعمل مع Vite proxy
+// في الإنتاج: استخدم متغير البيئة
+const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '/api' : 'https://nurserybackend-production.up.railway.app/api');
 
 const api = axios.create({
   baseURL: API_BASE_URL,

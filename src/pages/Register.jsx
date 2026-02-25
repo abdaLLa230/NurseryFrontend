@@ -6,7 +6,7 @@ import { validateEmail, validatePassword, validatePasswordMatch, validateName, s
 import { motion } from 'framer-motion';
 import { Lock, Mail, User, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://localhost:7001';
+const API_URL = import.meta.env.VITE_API_URL || 'https://nurserybackend-production.up.railway.app/api';
 
 const Register = () => {
   const navigate = useNavigate();
