@@ -1,19 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { salariesAPI, employeesAPI } from '../services/api';
-import { showSuccessAlert, showErrorAlert, showConfirmDialog, handleApiError } from '../utils/helpers';
+import { showSuccessAlert, showErrorAlert, showConfirmDialog, handleApiError, validateMoney } from '../utils/helpers';
 import { Search, DollarSign, Edit, AlertCircle, RefreshCw, X, Wallet, Trash2 } from 'lucide-react';
 
 const Salaries = () => {
     const { t } = useTranslation();
+    const location = useLocation();
     const [salaries, setSalaries] = useState([]);
     const [employees, setEmployees] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(location.state?.searchEmployee || '');
     const [filterStatus, setFilterStatus] = useState('all');
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(location.state?.selectedMonth || new Date().getMonth() + 1);
+    const [selectedYear, setSelectedYear] = useState(location.state?.selectedYear || new Date().getFullYear());
     const [showPayModal, setShowPayModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
@@ -92,9 +94,16 @@ const Salaries = () => {
             return;
         }
 
+        // Validate amount
+        const amountValidation = validateMoney(payData.amount, t('salaries.amount'));
+        if (!amountValidation.valid) {
+            showErrorAlert(amountValidation.error);
+            return;
+        }
+
         setSaving(true);
         try {
-            await salariesAPI.pay({ employeeID: selectedEmployee.employeeID, amount: parseFloat(payData.amount), month: selectedMonth, year: selectedYear, notes: payData.notes || null });
+            await salariesAPI.pay({ employeeID: selectedEmployee.employeeID, amount: parseFloat(payData.amount), month: selectedMonth, year: selectedYear, notes: payData.notes?.trim() || null });
             showSuccessAlert(t('messages.paymentSuccess')); setShowPayModal(false); fetchAll();
         } catch (err) { handleApiError(err, t); } finally { setSaving(false); }
     };
@@ -102,24 +111,30 @@ const Salaries = () => {
     const handleEdit = async (e) => {
         e.preventDefault();
 
-        // Final guard: check for duplicates again before submitting
         const currentRow = salaryMatrix.find(r => r.employee.employeeID === selectedEmployee?.employeeID);
         if (currentRow?.allRecords.length > 1) {
             showErrorAlert(t('messages.duplicateError'));
             return;
         }
 
+        // Validate amount
+        const amountValidation = validateMoney(editData.amount, t('salaries.amount'));
+        if (!amountValidation.valid) {
+            showErrorAlert(amountValidation.error);
+            return;
+        }
+
         setSaving(true);
         try {
-            // ✅ Fetch fresh data
             const freshSalary = await salariesAPI.getById(selectedSalary.paymentID);
 
-            // ✅ Use fresh data for update
             await salariesAPI.update(selectedSalary.paymentID, {
-                ...freshSalary.data,
-                amount: parseFloat(editData.amount),
-                paymentStatus: editData.paymentStatus, // Update Payment Status
-                notes: editData.notes || null,
+                employeeID: freshSalary.data.employeeID,
+                paymentMonth: freshSalary.data.paymentMonth,
+                paymentYear: freshSalary.data.paymentYear,
+                amount: parseFloat(editData.amount) || 0,
+                paymentStatus: editData.paymentStatus || 'NotPaid',
+                notes: editData.notes?.trim() || null,
             });
 
             showSuccessAlert(t('messages.updateSuccess'));
@@ -127,11 +142,11 @@ const Salaries = () => {
             fetchAll();
         } catch (err) {
             if (err.response?.status === 400 || err.response?.status === 409) {
-                showErrorAlert(t('status.dataChanged'));
+                showErrorAlert(err.response?.data?.message || t('status.dataChanged'));
                 fetchAll();
                 setShowEditModal(false);
             } else {
-                handleApiError(err, t);
+                showErrorAlert(err.response?.data?.message || err.message || t('messages.updateError'));
             }
         } finally { setSaving(false); }
     };
@@ -170,7 +185,7 @@ const Salaries = () => {
             <div className="card mb-4 !p-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <div className="relative"><Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" /><input type="text" placeholder={t('common.search') + '...'} className="input !pr-10 !py-3 text-sm" value={searchTerm} onChange={e => setSearchTerm(e.target.value)} /></div>
-                    <select className="input !py-2 text-sm" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}><option value="all">{t('common.all')}</option><option value="paid">{t('fees.paid')}</option><option value="unpaid">{t('fees.unpaid')}</option></select>
+                    <select className="input !py-2 text-sm" value={filterStatus} onChange={e => setFilterStatus(e.target.value)}><option value="all">{t('common.all')}</option><option value="paid">{t('dashboard.paidStatus')}</option><option value="unpaid">{t('dashboard.pending')}</option></select>
                     <select value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))} className="input !py-2 text-sm">{Array.from({ length: 12 }, (_, i) => (<option key={i} value={i + 1}>{t(`months.${i + 1}`)}</option>))}</select>
                     <select value={selectedYear} onChange={e => setSelectedYear(Number(e.target.value))} className="input !py-2 text-sm">{[2024, 2025, 2026, 2027].map(y => <option key={y} value={y}>{y}</option>)}</select>
                 </div>
@@ -179,8 +194,8 @@ const Salaries = () => {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
                 {[
                     { label: t('salaries.employee'), val: stats.total },
-                    { label: t('fees.paid'), val: stats.paid },
-                    { label: t('fees.unpaid'), val: stats.unpaid },
+                    { label: t('dashboard.paidStatus'), val: stats.paid },
+                    { label: t('dashboard.pending'), val: stats.unpaid },
                     { label: t('dashboard.monthlySalaries'), val: stats.totalAmount.toLocaleString() + ' ' + t('common.egp') },
                 ].map((s, i) => (<div key={i} className="card-stat"><p className="text-sm text-gray-500 dark:text-gray-400 mb-1">{s.label}</p><p className="text-2xl font-bold text-gray-900 dark:text-white">{s.val}</p></div>))}
             </div>
@@ -219,7 +234,7 @@ const Salaries = () => {
                                                 </span>
                                             )}
                                         </td>
-                                        <td className="px-4 py-3 text-right"><span className={row.isPaid ? 'pill-paid' : 'pill-unpaid'}>{row.isPaid ? t('fees.paid') : t('fees.unpaid')}</span></td>
+                                        <td className="px-4 py-3 text-right"><span className={row.isPaid ? 'pill-paid' : 'pill-unpaid'}>{row.isPaid ? t('dashboard.paidStatus') : t('dashboard.pending')}</span></td>
                                         <td className="px-4 py-3 hidden lg:table-cell text-right text-gray-500 dark:text-gray-400 text-xs">
                                             {row.salary?.notes || '—'}
                                             {row.hasDuplicates && <div className="text-[10px] text-red-500 font-bold mt-1">{t('messages.duplicateError')}</div>}
@@ -257,7 +272,7 @@ const Salaries = () => {
                                             <div className="flex items-center gap-2 flex-wrap">
                                                 <span className="pill-nursery">{row.employee.role}</span>
                                                 <span className={row.isPaid ? 'pill-paid' : 'pill-unpaid'}>
-                                                    {row.isPaid ? t('fees.paid') : t('fees.unpaid')}
+                                                    {row.isPaid ? t('dashboard.paidStatus') : t('dashboard.pending')}
                                                 </span>
                                             </div>
                                         </div>

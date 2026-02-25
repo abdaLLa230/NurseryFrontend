@@ -8,7 +8,7 @@ const Header = ({ onMenuClick }) => {
   const { language, toggleLanguage, theme, toggleTheme } = useLanguage();
 
   return (
-    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
+    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between fixed top-0 left-0 right-0 z-40 lg:relative">
       <div className="flex items-center gap-3">
         <button onClick={onMenuClick} className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
           <Menu className="w-5 h-5 text-gray-600 dark:text-gray-400" />

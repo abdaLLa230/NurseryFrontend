@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { classesAPI, childrenAPI } from '../services/api'; // ✅ Added childrenAPI
-import { showSuccessAlert, showConfirmDialog, handleApiError } from '../utils/helpers';
+import { showSuccessAlert, showConfirmDialog, handleApiError, validateName, showErrorAlert } from '../utils/helpers';
 import { Plus, Search, Edit, Trash2, School, AlertCircle, RefreshCw, X, Users } from 'lucide-react';
 
 const NURSERY_LEVELS = ['KG1', 'KG2', 'KG3'];
@@ -52,10 +52,19 @@ const Classes = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); setSaving(true);
+        e.preventDefault();
+        
+        // Validate class name
+        const nameValidation = validateName(formData.className, t('classes.name'));
+        if (!nameValidation.valid) {
+            showErrorAlert(nameValidation.error);
+            return;
+        }
+        
+        setSaving(true);
         try {
             const payload = {
-                className: formData.className,
+                className: formData.className.trim(),
                 classType: formData.classType,
                 level: formData.level
             };

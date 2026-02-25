@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { suppliesAPI } from '../services/api';
-import { showSuccessAlert, showConfirmDialog, handleApiError } from '../utils/helpers';
+import { showSuccessAlert, showConfirmDialog, handleApiError, validateName, validateMoney, showErrorAlert } from '../utils/helpers';
 import { Plus, Search, Edit, Trash2, ShoppingCart, AlertCircle, RefreshCw, X } from 'lucide-react';
 
 const Supplies = () => {
@@ -55,13 +55,29 @@ const Supplies = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); setSaving(true);
+        e.preventDefault();
+        
+        // Validate supply name
+        const nameValidation = validateName(formData.supplyName, t('supplies.name'));
+        if (!nameValidation.valid) {
+            showErrorAlert(nameValidation.error);
+            return;
+        }
+
+        // Validate price
+        const priceValidation = validateMoney(formData.price, t('supplies.price'));
+        if (!priceValidation.valid) {
+            showErrorAlert(priceValidation.error);
+            return;
+        }
+        
+        setSaving(true);
         try {
             const payload = {
-                name: formData.supplyName,
+                name: formData.supplyName.trim(),
                 price: parseFloat(formData.price),
                 purchaseDate: formData.purchaseDate || null,
-                notes: formData.notes || null
+                notes: formData.notes?.trim() || null
             };
             if (editingSupply) { await suppliesAPI.update(editingSupply.supplyID, payload); showSuccessAlert(t('messages.updateSuccess')); }
             else { await suppliesAPI.create(payload); showSuccessAlert(t('messages.addSuccess')); }

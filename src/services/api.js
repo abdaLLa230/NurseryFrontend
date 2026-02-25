@@ -53,6 +53,7 @@ export const dashboardAPI = {
   getStudentCounts: () => api.get('/reports/student-counts'),
   getProfitSummary: () => api.get('/reports/profit-summary'),
   getProfitTrend: (params) => api.get('/reports/profit-trend', { params }),
+  calculateProfit: (month, year) => api.post('/reports/calculate-profit', null, { params: { month, year } }),
 };
 
 // Children APIs

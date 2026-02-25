@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { childrenAPI, classesAPI } from '../services/api';
-import { showSuccessAlert, showConfirmDialog, handleApiError } from '../utils/helpers';
+import { showSuccessAlert, showConfirmDialog, handleApiError, validateName, validateAge, validatePhone, showErrorAlert } from '../utils/helpers';
 import { Plus, Search, Edit, Trash2, Users, UserCheck, GraduationCap, AlertCircle, RefreshCw, X } from 'lucide-react';
 
 const NURSERY_LEVELS = ['KG1', 'KG2', 'KG3'];
@@ -67,17 +67,29 @@ const Students = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const nameTrimmed = (formData.childName || '').trim();
-    if (!nameTrimmed) {
-      handleApiError({ response: { data: { message: t('students.invalidName') || 'Please enter the student name.' } } }, t);
+    // Validate name
+    const nameValidation = validateName(formData.childName, t('students.name'));
+    if (!nameValidation.valid) {
+      showErrorAlert(nameValidation.error);
       return;
     }
 
-    const ageNum = parseInt(formData.age, 10);
-    if (formData.age === '' || isNaN(ageNum) || ageNum < 0 || ageNum > 120) {
-      handleApiError({ response: { data: { message: t('students.invalidAge') || 'Please enter a valid age (0-120).' } } }, t);
+    // Validate age
+    const ageValidation = validateAge(formData.age);
+    if (!ageValidation.valid) {
+      showErrorAlert(ageValidation.error);
       return;
     }
+
+    // Validate phone (optional)
+    const phoneValidation = validatePhone(formData.parentPhone);
+    if (!phoneValidation.valid) {
+      showErrorAlert(phoneValidation.error);
+      return;
+    }
+
+    const nameTrimmed = formData.childName.trim();
+    const ageNum = parseInt(formData.age, 10);
 
     const studentClassNum = formData.studentClass !== '' && !isNaN(parseInt(formData.studentClass, 10))
       ? parseInt(formData.studentClass, 10)

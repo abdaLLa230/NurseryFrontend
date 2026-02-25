@@ -42,6 +42,8 @@
     "activeStudents": "الطلاب النشطين",
     "monthlyFees": "الرسوم الشهرية",
     "monthlySalaries": "المرتبات الشهرية",
+    "monthlyExpenses": "المصروفات الشهرية",
+    "totalExpenses": "إجمالي المصروفات",
     "netProfit": "صافي الربح",
     "totalRevenue": "إجمالي الإيرادات",
     "profitTrend": "تطور الأرباح",
@@ -65,7 +67,8 @@
     "searchByNameOrRole": "بحث بالاسم او الوظيفة...",
     "allPaid": "جميع الطلاب مسددين",
     "late": "متأخر",
-    "pending": "معلق"
+    "pending": "متأخر",
+    "paidStatus": "تم الدفع"
   },
   "students": {
     "title": "إدارة الطلاب",

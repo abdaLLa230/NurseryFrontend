@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Users, UserCheck, GraduationCap, DollarSign, Wallet, TrendingUp } from 'lucide-react';
+import { Users, UserCheck, GraduationCap, DollarSign, Wallet, TrendingUp, ShoppingCart } from 'lucide-react';
 
 const StatCard = ({ icon: Icon, title, value, color, loading, path }) => {
   const navigate = useNavigate();
@@ -31,12 +31,12 @@ const StatsCards = ({ stats, profitData, loading }) => {
   const { t } = useTranslation();
 
   const cards = [
-    { icon: Users, title: t('dashboard.totalStudents'), value: stats?.totalStudents, color: 'bg-blue-600', path: '/students' },
-    { icon: UserCheck, title: t('dashboard.nurseryStudents'), value: stats?.nurseryStudentCount, color: 'bg-pink-600', path: '/students' },
-    { icon: GraduationCap, title: t('dashboard.courseStudents'), value: stats?.courseStudentCount, color: 'bg-violet-600', path: '/students' },
-    { icon: DollarSign, title: t('dashboard.monthlyFees'), value: profitData?.totalFees, color: 'bg-emerald-600', path: '/fees' },
-    { icon: Wallet, title: t('dashboard.monthlySalaries'), value: profitData?.totalSalaries, color: 'bg-amber-600', path: '/salaries' },
-    { icon: TrendingUp, title: t('dashboard.netProfit'), value: profitData?.netProfit, color: 'bg-teal-600', path: '/reports' },
+    { icon: UserCheck, title: t('dashboard.nurseryStudents'), value: stats?.nurseryStudentCount || stats?.NurseryStudentCount, color: 'bg-pink-600', path: '/students' },
+    { icon: GraduationCap, title: t('dashboard.courseStudents'), value: stats?.courseStudentCount || stats?.CourseStudentCount, color: 'bg-violet-600', path: '/students' },
+    { icon: DollarSign, title: t('dashboard.monthlyFees'), value: profitData?.totalFees || profitData?.TotalFees, color: 'bg-emerald-600', path: '/fees' },
+    { icon: Wallet, title: t('dashboard.monthlySalaries'), value: profitData?.totalSalaries || profitData?.TotalSalaries, color: 'bg-amber-600', path: '/salaries' },
+    { icon: ShoppingCart, title: t('dashboard.monthlyExpenses'), value: profitData?.totalSupplies || profitData?.TotalSupplies || 0, color: 'bg-orange-600', path: '/supplies' },
+    { icon: TrendingUp, title: t('dashboard.netProfit'), value: profitData?.netProfit || profitData?.NetProfit, color: 'bg-teal-600', path: '/reports' },
   ];
 
   return (

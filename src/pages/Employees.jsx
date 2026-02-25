@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { employeesAPI, classesAPI } from '../services/api';
-import { showSuccessAlert, showConfirmDialog, handleApiError, showErrorAlert } from '../utils/helpers';
+import { showSuccessAlert, showConfirmDialog, handleApiError, showErrorAlert, validateName, validateMoney, validatePhone } from '../utils/helpers';
 import { Plus, Search, Edit, Trash2, UserCog, AlertCircle, RefreshCw, X } from 'lucide-react';
 
 const Employees = () => {
@@ -86,20 +86,31 @@ const Employees = () => {
     };
 
     const validateForm = () => {
-        const nameTrimmed = (formData.name || '').trim();
-        const roleTrimmed = (formData.role || '').trim();
-        const salaryNum = parseFloat(formData.monthlySalary);
+        // Validate name
+        const nameValidation = validateName(formData.name, t('employees.name'));
+        if (!nameValidation.valid) {
+            showErrorAlert(nameValidation.error);
+            return false;
+        }
 
-        if (!nameTrimmed) {
-            showErrorAlert(t('validation.required') + ': ' + t('employees.name'));
+        // Validate role
+        const roleValidation = validateName(formData.role, t('employees.role'));
+        if (!roleValidation.valid) {
+            showErrorAlert(roleValidation.error);
             return false;
         }
-        if (!roleTrimmed) {
-            showErrorAlert(t('validation.required') + ': ' + t('employees.role'));
+
+        // Validate salary
+        const salaryValidation = validateMoney(formData.monthlySalary, t('employees.monthlySalary'));
+        if (!salaryValidation.valid) {
+            showErrorAlert(salaryValidation.error);
             return false;
         }
-        if (isNaN(salaryNum) || salaryNum <= 0) {
-            showErrorAlert(t('validation.positive') || 'Salary must be a positive number');
+
+        // Validate phone (optional)
+        const phoneValidation = validatePhone(formData.phone);
+        if (!phoneValidation.valid) {
+            showErrorAlert(phoneValidation.error);
             return false;
         }
 

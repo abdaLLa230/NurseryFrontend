@@ -40,41 +40,159 @@ const Reports = () => {
 
     const printMonthlyBreakdown = () => {
         if (profitTrend.length === 0) return;
-        const w = window.open('', '_blank');
-        w.document.body.innerHTML = `
-          <div style="font-family:Arial;max-width:1000px;margin:40px auto;padding:30px;border:2px solid #333;direction:rtl">
-            <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #333;padding-bottom:20px;margin-bottom:30px">
-              <div style="text-align:center;flex:1">
-                <h1 style="margin:0 0 10px">حضانة الأمل</h1>
-                <p style="margin:0;color:#666">تقرير الأرباح والمصروفات الشهرية - عام ${new Date().getFullYear()}</p>
+        
+        // Create print content
+        const printContent = `
+          <!DOCTYPE html>
+          <html dir="rtl">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>تقرير ${new Date().getFullYear()}</title>
+            <style>
+              @page { 
+                margin: 0.8cm; 
+                size: A4;
+              }
+              @media print {
+                body { 
+                  margin: 0 !important; 
+                  padding: 0 !important;
+                  -webkit-print-color-adjust: exact;
+                  print-color-adjust: exact;
+                }
+                .no-print { display: none !important; }
+                .legend { 
+                  page-break-inside: avoid;
+                  break-inside: avoid;
+                }
+              }
+              * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+              }
+              body { 
+                font-family: Arial, sans-serif;
+                padding: 15px;
+              }
+              .container {
+                max-width: 100%;
+                margin: 0 auto;
+              }
+              .legend { 
+                display: flex; 
+                justify-content: center; 
+                gap: 30px; 
+                margin-top: 25px;
+                padding: 15px;
+                flex-wrap: wrap;
+                page-break-inside: avoid;
+                break-inside: avoid;
+              }
+              .legend-item { 
+                display: flex; 
+                align-items: center; 
+                gap: 10px; 
+                font-size: 15px;
+                font-weight: 600;
+              }
+              .legend-color { 
+                width: 24px; 
+                height: 24px; 
+                border-radius: 4px;
+                flex-shrink: 0;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #333;padding-bottom:20px;margin-bottom:30px">
+                <div style="text-align:center;flex:1">
+                  <h1 style="margin:0 0 10px;font-size:28px">حضانة الأمل</h1>
+                  <p style="margin:0;color:#666;font-size:16px">تقرير الأرباح والمصروفات الشهرية - عام ${new Date().getFullYear()}</p>
+                  <p style="margin:5px 0 0;color:#999;font-size:14px">تاريخ الطباعة: ${new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                </div>
+                <img src="${window.location.origin}/NurseryLogo.png" alt="حضانة الأمل" style="width:80px;height:80px;object-fit:cover;border-radius:50%;flex-shrink:0" onerror="this.style.display='none'" />
               </div>
-              <img src="/NurseryLogo.png" alt="حضانة الأمل" style="width:80px;height:80px;object-fit:cover;border-radius:50%;flex-shrink:0" />
-            </div>
-            <table style="width:100%;border-collapse:collapse;border:2px solid #333;direction:rtl">
-              <thead style="background:#333;color:white">
-                <tr>
-                  <th style="padding:12px;text-align:center;border:1px solid #333">الشهر</th>
-                  <th style="padding:12px;text-align:center;border:1px solid #333">الرسوم الشهرية</th>
-                  <th style="padding:12px;text-align:center;border:1px solid #333">الرواتب الشهرية</th>
-                  <th style="padding:12px;text-align:center;border:1px solid #333">المستلزمات</th>
-                  <th style="padding:12px;text-align:center;border:1px solid #333">صافي الربح</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${profitTrend.map((row, i) => `
-                  <tr style="border-bottom:1px solid #ddd;${i % 2 === 0 ? 'background:#f9f9f9' : ''}">
-                    <td style="padding:10px;border:1px solid #ddd;font-weight:bold;text-align:center">${row.monthName}</td>
-                    <td style="padding:10px;border:1px solid #ddd;color:#10b981;font-weight:600;text-align:center">${row.fees?.toLocaleString()}</td>
-                    <td style="padding:10px;border:1px solid #ddd;color:#f59e0b;font-weight:600;text-align:center">${row.salaries?.toLocaleString()}</td>
-                    <td style="padding:10px;border:1px solid #ddd;color:#6366f1;font-weight:600;text-align:center">${row.supplies?.toLocaleString()}</td>
-                    <td style="padding:10px;border:1px solid #ddd;font-weight:bold;font-size:16px;text-align:center">${row.profit?.toLocaleString()}</td>
+              <table style="width:100%;border-collapse:collapse;border:2px solid #333;direction:rtl">
+                <thead style="background:#333;color:white">
+                  <tr>
+                    <th style="padding:12px;text-align:center;border:1px solid #333">الشهر</th>
+                    <th style="padding:12px;text-align:center;border:1px solid #333">الرسوم الشهرية</th>
+                    <th style="padding:12px;text-align:center;border:1px solid #333">الرواتب الشهرية</th>
+                    <th style="padding:12px;text-align:center;border:1px solid #333">المصروفات الشهرية</th>
+                    <th style="padding:12px;text-align:center;border:1px solid #333">صافي الربح</th>
                   </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  ${profitTrend.map((row, i) => `
+                    <tr style="border-bottom:1px solid #ddd;${i % 2 === 0 ? 'background:#f9f9f9' : ''}">
+                      <td style="padding:10px;border:1px solid #ddd;font-weight:bold;text-align:center">${row.monthName}</td>
+                      <td style="padding:10px;border:1px solid #ddd;color:#10b981;font-weight:600;text-align:center">${row.fees?.toLocaleString()}</td>
+                      <td style="padding:10px;border:1px solid #ddd;color:#f59e0b;font-weight:600;text-align:center">${row.salaries?.toLocaleString()}</td>
+                      <td style="padding:10px;border:1px solid #ddd;color:#f97316;font-weight:600;text-align:center">${row.supplies?.toLocaleString()}</td>
+                      <td style="padding:10px;border:1px solid #ddd;font-weight:bold;font-size:16px;text-align:center">${row.profit?.toLocaleString()}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+              <div class="legend">
+                <div class="legend-item">
+                  <div class="legend-color" style="background:#10b981"></div>
+                  <span>الرسوم الشهرية</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color" style="background:#f59e0b"></div>
+                  <span>الرواتب الشهرية</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color" style="background:#f97316"></div>
+                  <span>المصروفات الشهرية</span>
+                </div>
+              </div>
+            </div>
+          </body>
+          </html>
         `;
-        setTimeout(() => w.print(), 300);
+        
+        // Check if mobile
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            // For mobile: Create blob and download as PDF or open in new tab
+            const blob = new Blob([printContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `تقرير-${new Date().getFullYear()}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            // Also try to open in new window for immediate print
+            setTimeout(() => {
+                const w = window.open('', '_blank');
+                if (w) {
+                    w.document.write(printContent);
+                    w.document.close();
+                    setTimeout(() => {
+                        w.focus();
+                        w.print();
+                    }, 1000);
+                }
+            }, 100);
+        } else {
+            // For desktop: Use normal print window
+            const w = window.open('', '_blank');
+            if (w) {
+                w.document.write(printContent);
+                w.document.close();
+                setTimeout(() => {
+                    w.focus();
+                    w.print();
+                }, 500);
+            }
+        }
     };
 
     if (error) {
@@ -100,10 +218,11 @@ const Reports = () => {
             </div>
 
             {/* Summary Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
                 {[
                     { label: t('dashboard.totalRevenue'), val: profitSummary?.totalPaidFees?.toLocaleString() || 0, icon: DollarSign, color: 'bg-emerald-600', link: '/fees' },
                     { label: t('dashboard.monthlySalaries'), val: profitSummary?.totalPaidSalaries?.toLocaleString() || 0, icon: Wallet, color: 'bg-amber-600', link: '/salaries' },
+                    { label: t('dashboard.totalExpenses'), val: profitSummary?.totalSupplies?.toLocaleString() || 0, icon: TrendingUp, color: 'bg-orange-600', link: '/supplies' },
                     { label: t('dashboard.netProfit'), val: profitSummary?.actualNetProfit?.toLocaleString() || 0, icon: TrendingUp, color: 'bg-indigo-600', link: '/reports' },
                     { label: t('dashboard.totalStudents'), val: studentCounts?.totalStudents || 0, icon: Users, color: 'bg-blue-600', link: '/students' },
                 ].map((s, i) => (
@@ -152,13 +271,13 @@ const Reports = () => {
                         <ResponsiveContainer width="100%" height={280}>
                             <BarChart data={profitTrend}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                                <XAxis dataKey="monthName" stroke="#9ca3af" style={{ fontSize: '11px' }} />
-                                <YAxis stroke="#9ca3af" style={{ fontSize: '11px' }} />
+                                <XAxis dataKey="monthName" stroke="#9ca3af" style={{ fontSize: '12px' }} />
+                                <YAxis stroke="#9ca3af" style={{ fontSize: '12px' }} />
                                 <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', fontSize: '12px' }} />
                                 <Legend wrapperStyle={{ fontSize: '12px' }} />
                                 <Bar dataKey="fees" fill="#10b981" name={t('dashboard.monthlyFees')} radius={[4, 4, 0, 0]} />
                                 <Bar dataKey="salaries" fill="#f59e0b" name={t('dashboard.monthlySalaries')} radius={[4, 4, 0, 0]} />
-                                <Bar dataKey="supplies" fill="#6366f1" name={t('supplies.title')} radius={[4, 4, 0, 0]} />
+                                <Bar dataKey="supplies" fill="#f97316" name={t('dashboard.monthlyExpenses')} radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
                     ) : (<p className="text-sm text-gray-500 text-center py-12">{t('common.noData')}</p>)}
@@ -179,7 +298,7 @@ const Reports = () => {
                         <table className="w-full text-sm">
                             <thead className="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                                 <tr>
-                                    {[t('fees.month'), t('dashboard.monthlyFees'), t('dashboard.monthlySalaries'), t('supplies.title'), t('dashboard.netProfit')].map((h, i) => (
+                                    {[t('fees.month'), t('dashboard.monthlyFees'), t('dashboard.monthlySalaries'), t('dashboard.monthlyExpenses'), t('dashboard.netProfit')].map((h, i) => (
                                         <th key={i} className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-400">{h}</th>
                                     ))}
                                 </tr>
@@ -190,7 +309,7 @@ const Reports = () => {
                                         <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{row.monthName}</td>
                                         <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-medium">{row.fees?.toLocaleString()} {t('common.egp')}</td>
                                         <td className="px-4 py-3 text-amber-600 dark:text-amber-400 font-medium">{row.salaries?.toLocaleString()} {t('common.egp')}</td>
-                                        <td className="px-4 py-3 text-indigo-600 dark:text-indigo-400 font-medium">{row.supplies?.toLocaleString()} {t('common.egp')}</td>
+                                        <td className="px-4 py-3 text-orange-600 dark:text-orange-400 font-medium">{row.supplies?.toLocaleString()} {t('common.egp')}</td>
                                         <td className="px-4 py-3 font-bold text-gray-900 dark:text-white">{row.profit?.toLocaleString()} {t('common.egp')}</td>
                                     </tr>
                                 ))}

@@ -2,68 +2,104 @@ import Swal from 'sweetalert2';
 
 // ============== SweetAlert2 Utilities ==============
 
+const isMobile = () => window.innerWidth < 640;
+
 export const Toast = Swal.mixin({
   toast: true,
-  position: 'top-end',
+  position: isMobile() ? 'bottom-center' : 'top-end',
   showConfirmButton: false,
-  timer: 3000,
+  timer: 4000,
   timerProgressBar: true,
+  width: isMobile() ? '95%' : '480px',
+  padding: '0',
+  backdrop: false,
+  customClass: {
+    popup: isMobile() ? 'swal-toast-mobile' : 'swal-toast-desktop',
+    timerProgressBar: 'swal-timer-bar'
+  },
   didOpen: (toast) => {
     toast.addEventListener('mouseenter', Swal.stopTimer);
     toast.addEventListener('mouseleave', Swal.resumeTimer);
   }
 });
 
-export const showSuccessAlert = (message, title = 'Success') => {
+export const showSuccessAlert = (message, title = null) => {
   return Toast.fire({
     icon: 'success',
-    title: title,
-    text: message
+    title: title || message,
+    html: title ? `<div class="swal-message">${message}</div>` : null,
+    iconColor: '#10b981',
   });
 };
 
-export const showErrorAlert = (message, title = 'Error') => {
+export const showErrorAlert = (message, title = null) => {
   return Toast.fire({
     icon: 'error',
-    title: title,
-    text: message
+    title: title || message,
+    html: title ? `<div class="swal-message">${message}</div>` : null,
+    iconColor: '#ef4444',
   });
 };
 
-export const showWarningAlert = (message, title = 'Warning') => {
+export const showWarningAlert = (message, title = null) => {
   return Toast.fire({
     icon: 'warning',
-    title: title,
-    text: message
+    title: title || message,
+    html: title ? `<div class="swal-message">${message}</div>` : null,
+    iconColor: '#f59e0b',
   });
 };
 
-export const showInfoAlert = (message, title = 'Info') => {
+export const showInfoAlert = (message, title = null) => {
   return Toast.fire({
     icon: 'info',
-    title: title,
-    text: message
+    title: title || message,
+    html: title ? `<div class="swal-message">${message}</div>` : null,
+    iconColor: '#3b82f6',
   });
 };
 
-export const showConfirmDialog = async (title, text, confirmButtonText = 'Confirm', cancelButtonText = 'Cancel') => {
+export const showConfirmDialog = async (title, text, confirmButtonText = 'تأكيد', cancelButtonText = 'إلغاء') => {
   return Swal.fire({
     title: title,
-    text: text,
+    html: `<div class="swal-confirm-text">${text}</div>`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#ef4444',
     cancelButtonColor: '#6b7280',
-    confirmButtonText: confirmButtonText,
-    cancelButtonText: cancelButtonText
+    confirmButtonText: `<span class="swal-btn-text">${confirmButtonText}</span>`,
+    cancelButtonText: `<span class="swal-btn-text">${cancelButtonText}</span>`,
+    width: isMobile() ? '92%' : '600px',
+    padding: isMobile() ? '28px 24px' : '48px 40px',
+    customClass: {
+      popup: isMobile() ? 'swal-confirm-mobile' : 'swal-confirm-desktop',
+      title: 'swal-confirm-title',
+      htmlContainer: 'swal-confirm-container',
+      confirmButton: 'swal-btn-confirm',
+      cancelButton: 'swal-btn-cancel',
+      actions: 'swal-actions',
+      icon: 'swal-icon'
+    },
+    buttonsStyling: false,
+    reverseButtons: true,
+    backdrop: 'rgba(0, 0, 0, 0.45)',
+    allowOutsideClick: false
   });
 };
 
-export const showLoadingAlert = (title = 'Loading...', text = 'Please wait') => {
+export const showLoadingAlert = (title = 'جاري التحميل...', text = 'الرجاء الانتظار') => {
   return Swal.fire({
     title: title,
-    text: text,
+    html: `<div class="swal-loading-text">${text}</div>`,
     allowOutsideClick: false,
+    allowEscapeKey: false,
+    width: isMobile() ? '85%' : '480px',
+    padding: isMobile() ? '28px' : '40px',
+    customClass: {
+      popup: isMobile() ? 'swal-loading-mobile' : 'swal-loading-desktop',
+      title: 'swal-loading-title'
+    },
+    backdrop: 'rgba(0, 0, 0, 0.5)',
     didOpen: () => {
       Swal.showLoading();
     }
@@ -134,6 +170,112 @@ export const isValidPhone = (phone) => {
 
 export const isValidNumber = (value) => {
   return !isNaN(parseFloat(value)) && isFinite(value);
+};
+
+// Validation for text fields
+export const validateRequired = (value, fieldName) => {
+  const trimmed = (value || '').trim();
+  if (!trimmed) {
+    return { valid: false, error: `${fieldName} مطلوب` };
+  }
+  return { valid: true };
+};
+
+// Validation for name fields (min 2 chars, max 100)
+export const validateName = (value, fieldName = 'الاسم') => {
+  const trimmed = (value || '').trim();
+  if (!trimmed) {
+    return { valid: false, error: `${fieldName} مطلوب` };
+  }
+  if (trimmed.length < 2) {
+    return { valid: false, error: `${fieldName} يجب أن يكون حرفين على الأقل` };
+  }
+  if (trimmed.length > 100) {
+    return { valid: false, error: `${fieldName} طويل جداً (الحد الأقصى 100 حرف)` };
+  }
+  return { valid: true };
+};
+
+// Validation for age (1-120)
+export const validateAge = (value) => {
+  const age = parseInt(value, 10);
+  if (isNaN(age)) {
+    return { valid: false, error: 'العمر يجب أن يكون رقماً' };
+  }
+  if (age < 1 || age > 120) {
+    return { valid: false, error: 'العمر يجب أن يكون بين 1 و 120' };
+  }
+  return { valid: true };
+};
+
+// Validation for positive numbers
+export const validatePositiveNumber = (value, fieldName = 'القيمة') => {
+  const num = parseFloat(value);
+  if (isNaN(num)) {
+    return { valid: false, error: `${fieldName} يجب أن يكون رقماً` };
+  }
+  if (num <= 0) {
+    return { valid: false, error: `${fieldName} يجب أن يكون أكبر من صفر` };
+  }
+  return { valid: true };
+};
+
+// Validation for salary/price (min 1, max 1000000)
+export const validateMoney = (value, fieldName = 'المبلغ') => {
+  const num = parseFloat(value);
+  if (isNaN(num)) {
+    return { valid: false, error: `${fieldName} يجب أن يكون رقماً` };
+  }
+  if (num < 1) {
+    return { valid: false, error: `${fieldName} يجب أن يكون 1 على الأقل` };
+  }
+  if (num > 1000000) {
+    return { valid: false, error: `${fieldName} كبير جداً (الحد الأقصى 1,000,000)` };
+  }
+  return { valid: true };
+};
+
+// Validation for phone number
+export const validatePhone = (value) => {
+  if (!value || value.trim() === '') {
+    return { valid: true }; // Optional field
+  }
+  const trimmed = value.trim();
+  if (!/^01[0-2,5]{1}[0-9]{8}$/.test(trimmed)) {
+    return { valid: false, error: 'رقم الهاتف غير صحيح (يجب أن يبدأ بـ 01 ويتكون من 11 رقم)' };
+  }
+  return { valid: true };
+};
+
+// Validation for email
+export const validateEmail = (value) => {
+  if (!value || value.trim() === '') {
+    return { valid: false, error: 'البريد الإلكتروني مطلوب' };
+  }
+  const trimmed = value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    return { valid: false, error: 'البريد الإلكتروني غير صحيح' };
+  }
+  return { valid: true };
+};
+
+// Validation for password
+export const validatePassword = (value, minLength = 6) => {
+  if (!value || value.trim() === '') {
+    return { valid: false, error: 'كلمة المرور مطلوبة' };
+  }
+  if (value.length < minLength) {
+    return { valid: false, error: `كلمة المرور يجب أن تكون ${minLength} أحرف على الأقل` };
+  }
+  return { valid: true };
+};
+
+// Validation for password confirmation
+export const validatePasswordMatch = (password, confirmPassword) => {
+  if (password !== confirmPassword) {
+    return { valid: false, error: 'كلمات المرور غير متطابقة' };
+  }
+  return { valid: true };
 };
 
 // ============== String Utilities ==============
@@ -343,6 +485,15 @@ export default {
   isValidEmail,
   isValidPhone,
   isValidNumber,
+  validateRequired,
+  validateName,
+  validateAge,
+  validatePositiveNumber,
+  validateMoney,
+  validatePhone,
+  validateEmail,
+  validatePassword,
+  validatePasswordMatch,
   truncateText,
   capitalizeFirst,
   sortByKey,

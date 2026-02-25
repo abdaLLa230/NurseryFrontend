@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
+import { validateEmail, validatePassword, validatePasswordMatch, validateName, showErrorAlert } from '../utils/helpers';
 import { motion } from 'framer-motion';
 import { Lock, Mail, User, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 
@@ -39,14 +40,31 @@ const Register = () => {
       return;
     }
 
-    // Validation
-    if (formData.password !== formData.confirmPassword) {
-      setError(t('register.passwordMismatch'));
+    // Validate username
+    const usernameValidation = validateName(formData.username, t('register.username'));
+    if (!usernameValidation.valid) {
+      setError(usernameValidation.error);
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError(t('validation.minLength', { min: 6 }));
+    // Validate email
+    const emailValidation = validateEmail(formData.email);
+    if (!emailValidation.valid) {
+      setError(emailValidation.error);
+      return;
+    }
+
+    // Validate password
+    const passwordValidation = validatePassword(formData.password, 6);
+    if (!passwordValidation.valid) {
+      setError(passwordValidation.error);
+      return;
+    }
+
+    // Validate password match
+    const passwordMatchValidation = validatePasswordMatch(formData.password, formData.confirmPassword);
+    if (!passwordMatchValidation.valid) {
+      setError(passwordMatchValidation.error);
       return;
     }
 
@@ -64,8 +82,8 @@ const Register = () => {
       await axios.post(
         `${API_URL}/api/auth/register`,
         {
-          username: formData.username,
-          email: formData.email,
+          username: formData.username.trim(),
+          email: formData.email.trim(),
           password: formData.password,
           role: formData.role
         },

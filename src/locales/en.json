@@ -42,6 +42,8 @@
     "activeStudents": "Active Students",
     "monthlyFees": "Monthly Fees",
     "monthlySalaries": "Monthly Salaries",
+    "monthlyExpenses": "Monthly Expenses",
+    "totalExpenses": "Total Expenses",
     "netProfit": "Net Profit",
     "totalRevenue": "Total Revenue",
     "profitTrend": "Profit Trend",
@@ -65,7 +67,8 @@
     "searchByNameOrRole": "Search by name or role...",
     "allPaid": "All paid",
     "late": "Late",
-    "pending": "Pending"
+    "pending": "Late",
+    "paidStatus": "Paid"
   },
   "students": {
     "title": "Manage Students",
