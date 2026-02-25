@@ -84,7 +84,7 @@ const Fees = () => {
         const matchType = filterType === 'all' || row.student.studentType === filterType;
         const matchLevel = filterLevel === 'all' || row.student.studentLevel === filterLevel;
         return matchSearch && matchStatus && matchType && matchLevel;
-    });
+    }).sort((a, b) => a.student.childName.localeCompare(b.student.childName, 'ar'));
 
     const stats = {
         total: feeMatrix.length,
@@ -436,10 +436,11 @@ const printContent = `
   <style>
     @page { size: A4; margin: 0; }
     body { margin: 0; padding: 0; }
-    .page { width: 210mm; min-height: 297mm; background: white; padding: 15mm 12mm; box-sizing: border-box; page-break-after: always; position: relative; }
+    .page { width: 210mm; min-height: 297mm; background: white; padding: 15mm 12mm 20mm 12mm; box-sizing: border-box; page-break-after: always; position: relative; }
     .page-no-header { padding-top: 10mm; }
     .page:last-child { page-break-after: auto; }
     .footer { position: absolute; bottom: 10mm; left: 12mm; right: 12mm; border-top: 1px solid #eee; padding-top: 8px; display: flex; justify-content: space-between; font-size: 8px; color: #bbb; }
+    .table-wrapper { margin-bottom: 15mm; }
   </style>
 
   <!-- الصفحة الأولى مع الهيدر -->
@@ -495,6 +496,7 @@ const printContent = `
     <div style="font-size:11px;letter-spacing:1.5px;color:#999;font-weight:700;margin-bottom:8px;">تفاصيل الطلاب</div>
 
     <!-- TABLE للصفحة الأولى -->
+    <div class="table-wrapper">
     <table style="width:100%;border-collapse:collapse;font-size:12.5px;border:1px solid #ddd;">
       <thead>
         <tr style="background:#1a1a2e;-webkit-print-color-adjust:exact;print-color-adjust:exact;">
@@ -531,6 +533,7 @@ const printContent = `
         `}).join('')}
       </tbody>
     </table>
+    </div>
 
     <!-- FOOTER -->
     <div class="footer">

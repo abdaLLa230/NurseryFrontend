@@ -74,7 +74,7 @@ const Salaries = () => {
         const matchSearch = row.employee.name?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchStatus = filterStatus === 'all' || (filterStatus === 'paid' && row.isPaid) || (filterStatus === 'unpaid' && !row.isPaid);
         return matchSearch && matchStatus;
-    });
+    }).sort((a, b) => a.employee.name.localeCompare(b.employee.name, 'ar'));
 
     const stats = {
         total: salaryMatrix.length,
