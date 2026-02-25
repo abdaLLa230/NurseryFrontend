@@ -1,5 +1,5 @@
 // Service Worker for caching and offline support
-const CACHE_NAME = 'nursery-system-v1';
+const CACHE_NAME = 'nursery-system-v2';
 const urlsToCache = [
   '/',
   '/index.html',
