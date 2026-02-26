@@ -1,0 +1,22 @@
+{
+  "name": "حضانة الأمل - نظام إدارة الحضانة",
+  "short_name": "حضانة الأمل",
+  "description": "نظام متكامل لإدارة الحضانات والدورات التعليمية",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "/NurseryLogo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "business"],
+  "screenshots": []
+}
