@@ -7,6 +7,131 @@
 .swal2-icon {
   display: none !important;
 }
+.swal-confirm-icon-rings {
+  width:68px; 
+  height:68px; 
+  border-radius:50%;
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
+  margin:0 auto 18px;
+}
+.confirm-ring-deletes { 
+  background:rgba(220,38,38,0.15); 
+  border: 1px solid rgba(220,38,38,0.3); 
+}
+.swal-confirm-texts { 
+  font-size:14px !important; 
+  color:rgba(255,255,255,0.45) !important; 
+  line-height:1.7 !important; 
+  text-align:center !important; 
+}
+.swal-btn-texts{
+  display: inline-block;
+  /* padding: 10px 20px;
+  color: #ffffff;
+  border-radius: 10px ;
+  background-color: #16a34a; */
+}
+.swal-btn-texts {
+  display: inline-block;
+  /* padding: 10px 20px;
+  color: #ffffff;
+  border-radius: 10px ;
+  background-color: #e21313; */
+}
+.swal-confirm-icon-rings svg { 
+  width:34px; 
+  height:34px; 
+}
+.swal-btn-confirms, 
+.swal-btn-cancels {
+  border-radius:10px !important; 
+  padding:11px 28px !important;
+  font-size:14px !important; 
+  font-weight:700 !important; 
+  font-family:'Cairo',sans-serif !important;
+  transition:all 0.2s ease !important; 
+  border:none !important;
+  cursor:pointer !important; 
+  min-width:110px !important;
+}
+
+.swal-btn-confirms { 
+  background:#dc2626 !important; 
+  color:white !important; 
+  box-shadow:0 4px 14px rgba(220,38,38,0.4) !important; 
+}
+
+.swal-btn-confirms:hover { 
+  background:#b91c1c !important; 
+  transform:translateY(-1px) !important; 
+}
+
+.swal-btn-cancels { 
+  background:rgba(255,255,255,0.07) !important; 
+  color:rgba(255,255,255,0.7) !important; 
+  border:1px solid rgba(255,255,255,0.1) !important; 
+}
+
+.swal-btn-cancels:hover { 
+  background:rgba(255,255,255,0.12) !important; 
+}
+
+.swal-btn-texts {
+  display: inline-block;
+}
+
+.swal-confirm-mobiles,
+.swal-confirm-desktops {
+  background: rgba(10,10,10,0.9) !important;
+  backdrop-filter: blur(32px) !important;
+  -webkit-backdrop-filter: blur(32px) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6) !important;
+  border-radius: 20px !important; 
+  padding: 36px 32px 28px !important;
+  font-family:'Cairo',sans-serif !important; 
+  direction:rtl !important;
+  overflow: hidden !important;
+}
+
+.swal-confirm-titles {
+  font-size:18px !important; 
+  font-weight:800 !important; 
+  color:#ffffff !important;
+  margin-bottom:8px !important; 
+  text-align:center !important; 
+  font-family:'Cairo',sans-serif !important;
+}
+
+
+
+.swal-confirm-containers { 
+  margin:0 !important; 
+  padding:0 !important; 
+  overflow:hidden !important; 
+}
+
+.swal-action { 
+  margin-top:28px !important; 
+  gap:10px !important; 
+  display:flex !important; 
+  justify-content:center !important; 
+}
+
+.swal-btn-confirms, 
+.swal-btn-cancels {
+  border-radius:10px !important; 
+  padding:11px 28px !important;
+  font-size:14px !important; 
+  font-weight:700 !important; 
+  font-family:'Cairo',sans-serif !important;
+  transition:all 0.2s ease !important; 
+  border:none !important;
+  cursor:pointer !important; 
+  min-width:110px !important;
+}
 
 /* ============================================
    📦 1. TOAST (إشعار صغير)
@@ -227,14 +352,7 @@
   padding: 0 !important;
 }
 
-/* Confirm Text */
-.swal-confirm-text {
-  font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.45);
-  text-align: center;
-  line-height: 1.6;
-  margin-bottom: 24px;
-}
+
 
 .swal-confirm-container {
   margin: 0 !important;
@@ -288,9 +406,6 @@
   color: rgba(255, 255, 255, 0.9) !important;
 }
 
-.swal-btn-text {
-  display: inline-block;
-}
 
 /* ============================================
    📦 3. LOADING DIALOG (تحميل)
@@ -450,9 +565,7 @@
     font-size: 16px !important;
   }
 
-  .swal-confirm-text {
-    font-size: 12.5px;
-  }
+  
 
   .swal-confirm-dot {
     width: 48px;

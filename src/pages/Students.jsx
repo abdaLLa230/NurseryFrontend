@@ -370,7 +370,7 @@ const Students = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="label">{t('students.parentPhone')}</label><input type="text" className="input" value={formData.parentPhone} onChange={e => setFormData({ ...formData, parentPhone: e.target.value })} /></div>
-                <div><label className="label">{t('students.registrationDate')}</label><input type="date" className="input" value={formData.registrationDate} onChange={e => setFormData({ ...formData, registrationDate: e.target.value })} /></div>
+                <div><label className="label">{t('students.registrationDate')}</label><input type="date" className="input" dir="ltr" style={{ textAlign: 'end' }} value={formData.registrationDate} onChange={e => setFormData({ ...formData, registrationDate: e.target.value })} /></div>
               </div>
               {editingStudent && (
                 <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
