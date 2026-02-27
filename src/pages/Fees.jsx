@@ -406,7 +406,7 @@ const Fees = () => {
                 filterDisplayText += ' - ' + filterLevel;
             }
         } else if (filterType === 'Course') {
-            filterDisplayText = 'كورس';
+            filterDisplayText = 'درس';
             if (filterLevel !== 'all') {
                 filterDisplayText += ' - الصف ' + (filterLevel === '1' ? 'الأول' : 
                                                     filterLevel === '2' ? 'الثاني' : 
@@ -435,13 +435,13 @@ const Fees = () => {
 const printContent = `
   <style>
     @page { size: A4; margin: 0; }
-    @media print{ @page {margin: 0;}}
     body { margin: 0; padding: 0; }
-    .page { width: 210mm; min-height: 297mm; background: white; padding: 15mm 12mm 20mm 12mm; box-sizing: border-box; page-break-after: always; position: relative; }
+    .page { width: 210mm; min-height: 297mm; background: white; padding: 12mm 12mm 18mm 12mm; box-sizing: border-box; page-break-after: always; position: relative; }
     .page-no-header { padding-top: 10mm; }
     .page:last-child { page-break-after: auto; }
-    .footer { position: absolute; bottom: 10mm; left: 12mm; right: 12mm; border-top: 1px solid #eee; padding-top: 8px; display: flex; justify-content: space-between; font-size: 8px; color: #bbb; }
-    .table-wrapper { margin-bottom: 15mm; }
+    .footer { position: absolute; bottom: 10mm; left: 12mm; right: 12mm; border-top: 1px solid #6e6c6c51; padding-top: 0px; display: flex; justify-content: space-between; font-size: 10px; color: #bbb; }
+
+    .table-wrapper { margin-bottom: 10mm; }
   </style>
 
   <!-- الصفحة الأولى مع الهيدر -->
@@ -465,23 +465,23 @@ const printContent = `
     </div>
 
     <!-- STATS -->
-    <div style="display:flex;border:1.5px solid #ddd;border-radius:4px;overflow:hidden;margin-bottom:14px;">
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:8px 10px;border-left:1.5px solid #ddd;">
+      <div style="display:flex;border:1.5px solid #ddd;border-radius:4px;overflow:hidden;margin-bottom:12px;">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 12px;border-left:1.5px solid #ddd;">
         <div style="font-size:22px;font-weight:900;color:#1a1a2e;">${printStats.total}</div>
         <div style="font-size:11px;color:#666;">إجمالي الطلاب</div>
       </div>
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:8px 10px;border-left:1.5px solid #ddd;">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 12px;border-left:1.5px solid #ddd;">
         <div style="font-size:22px;font-weight:900;color:#15803d;">${printStats.paid}</div>
         <div style="font-size:11px;color:#666;">تم الدفع</div>
       </div>
-      <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:8px 10px;">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 12px;">
         <div style="font-size:22px;font-weight:900;color:#b91c1c;">${printStats.unpaid}</div>
         <div style="font-size:11px;color:#666;">لم يدفع </div>
       </div>
     </div>
 
     <!-- AMOUNT BOX -->
-    <div style="background:#1a1a2e;color:white;padding:10px 20px;border-radius:4px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;-webkit-print-color-adjust:exact;print-color-adjust:exact;">
+      <div style="background:#1a1a2e;color:white;padding:10px 20px;border-radius:4px;display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;-webkit-print-color-adjust:exact;print-color-adjust:exact;">
       <div>
         <div style="font-size:11px;color:rgba(255,255,255,0.6);letter-spacing:0.5px;margin-bottom:6px;">إجمالي المبالغ المحصّلة</div>
         <div style="font-size:24px;font-weight:900;line-height:1;letter-spacing:-1px;">${printStats.totalAmount.toLocaleString()}</div>
@@ -517,17 +517,17 @@ const printContent = `
           
           return `
           <tr style="border-bottom:${isLastInLevel ? '2px solid #1a1a2e' : '1px solid #ebebeb'};${i % 2 === 1 ? 'background:#fafafa;' : ''}">
-            <td style="padding:9px 12px;text-align:center;color:#999;font-size:11px;border-left:1px solid #f0f0f0;">${i + 1}</td>
-            <td style="padding:9px 12px;font-weight:700;border-left:1px solid #f0f0f0;">${row.student.childName}</td>
-            <td style="padding:9px 12px;text-align:center;border-left:1px solid #f0f0f0;">
+            <td style="padding:8px 10px;text-align:center;color:#999;font-size:11px;border-left:1px solid #f0f0f0;">${i + 1}</td>
+            <td style="padding:8px 10px;font-weight:700;border-left:1px solid #f0f0f0;">${row.student.childName}</td>
+            <td style="padding:8px 10px;text-align:center;border-left:1px solid #f0f0f0;">
               ${row.student.studentType === 'Nursery'
                 ? '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;border:1px solid #bfdbfe;background:#eff6ff;color:#1d4ed8;-webkit-print-color-adjust:exact;print-color-adjust:exact;">حضانة</span>'
-                : '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;border:1px solid #fde68a;background:#fffbeb;color:#b45309;-webkit-print-color-adjust:exact;print-color-adjust:exact;">كورس</span>'
+                : '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;border:1px solid #fde68a;background:#fffbeb;color:#b45309;-webkit-print-color-adjust:exact;print-color-adjust:exact;">درس</span>'
               }
             </td>
-            <td style="padding:9px 12px;text-align:center;color:#555;border-left:1px solid #f0f0f0;">${row.student.studentLevel || '—'}</td>
-            <td style="padding:9px 12px;text-align:center;font-weight:700;color:#1a1a2e;border-left:1px solid #f0f0f0;">${row.amount > 0 ? row.amount.toLocaleString() + ' ج' : '—'}</td>
-            <td style="padding:9px 12px;text-align:center;font-size:11.5px;font-weight:700;color:${row.isPaid ? '#15803d' : '#b91c1c'};">
+            <td style="padding:8px 10px;text-align:center;color:#555;border-left:1px solid #f0f0f0;">${row.student.studentLevel || '—'}</td>
+            <td style="padding:8px 10px;text-align:center;font-weight:700;color:#1a1a2e;border-left:1px solid #f0f0f0;">${row.amount > 0 ? row.amount.toLocaleString() + ' ج' : '—'}</td>
+            <td style="padding:8px 10px;text-align:center;font-size:11.5px;font-weight:700;color:${row.isPaid ? '#15803d' : '#b91c1c'};">
               ${row.isPaid ? ' ✅ تم الدفع' : '🚫 لم يدفع'}
             </td>
           </tr>
@@ -571,7 +571,7 @@ const printContent = `
             <td style="padding:9px 12px;text-align:center;border-left:1px solid #f0f0f0;">
               ${row.student.studentType === 'Nursery'
                 ? '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;border:1px solid #bfdbfe;background:#eff6ff;color:#1d4ed8;-webkit-print-color-adjust:exact;print-color-adjust:exact;">حضانة</span>'
-                : '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;border:1px solid #fde68a;background:#fffbeb;color:#b45309;-webkit-print-color-adjust:exact;print-color-adjust:exact;">كورس</span>'
+                : '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;border:1px solid #fde68a;background:#fffbeb;color:#b45309;-webkit-print-color-adjust:exact;print-color-adjust:exact;">درس</span>'
               }
             </td>
             <td style="padding:9px 12px;text-align:center;color:#555;border-left:1px solid #f0f0f0;">${row.student.studentLevel || '—'}</td>
@@ -620,7 +620,7 @@ const printContent = `
             <td style="padding:9px 12px;text-align:center;border-left:1px solid #f0f0f0;">
               ${row.student.studentType === 'Nursery'
                 ? '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;border:1px solid #bfdbfe;background:#eff6ff;color:#1d4ed8;-webkit-print-color-adjust:exact;print-color-adjust:exact;">حضانة</span>'
-                : '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;border:1px solid #fde68a;background:#fffbeb;color:#b45309;-webkit-print-color-adjust:exact;print-color-adjust:exact;">كورس</span>'
+                : '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;border:1px solid #fde68a;background:#fffbeb;color:#b45309;-webkit-print-color-adjust:exact;print-color-adjust:exact;">درس</span>'
               }
             </td>
             <td style="padding:9px 12px;text-align:center;color:#555;border-left:1px solid #f0f0f0;">${row.student.studentLevel || '—'}</td>
