@@ -435,6 +435,7 @@ const Fees = () => {
 const printContent = `
   <style>
     @page { size: A4; margin: 0; }
+    @media print{ @page {margin: 0;}}
     body { margin: 0; padding: 0; }
     .page { width: 210mm; min-height: 297mm; background: white; padding: 15mm 12mm 20mm 12mm; box-sizing: border-box; page-break-after: always; position: relative; }
     .page-no-header { padding-top: 10mm; }
